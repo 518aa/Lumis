@@ -23,8 +23,8 @@ class SettingsActivity : AppCompatActivity() {
         // 读取保存的配置
         binding.etWsUrl.setText(prefs.getString("ws_url", "wss://api.tenclass.net/xiaozhi/v1/"))
         binding.etToken.setText(prefs.getString("ws_token", ""))
-        binding.etDeviceId.setText(prefs.getString("device_id", "f0:18:98:3d:a1:35"))
-        binding.etClientId.setText(prefs.getString("client_id", "54b01fa1-23b7-4f1a-84eb-b36f42095595"))
+        binding.etDeviceId.setText(prefs.getString("device_id", ""))
+        binding.etClientId.setText(prefs.getString("client_id", ""))
 
         binding.btnSave.setOnClickListener {
             prefs.edit()

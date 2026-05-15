@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.ScrollView
@@ -16,6 +17,7 @@ import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.lumis.android.databinding.ActivityMainBinding
 import kotlinx.coroutines.*
+import java.util.UUID
 
 class MainActivity : AppCompatActivity() {
 
@@ -39,6 +41,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
+        ensureDeviceIds()
+
         binding.btnTalk.setOnClickListener {
             if (!isSessionActive) {
                 startSession()
@@ -58,9 +62,9 @@ class MainActivity : AppCompatActivity() {
         if (!checkAudioPermission()) return
 
         val wsUrl = prefs.getString("ws_url", "wss://api.tenclass.net/xiaozhi/v1/")!!
-        val token = prefs.getString("ws_token", "test-token")!!
-        val deviceId = prefs.getString("device_id", "f0:18:98:3d:a1:35")!!
-        val clientId = prefs.getString("client_id", "54b01fa1-23b7-4f1a-84eb-b36f42095595")!!
+        val token = prefs.getString("ws_token", "")!!
+        val deviceId = prefs.getString("device_id", "")!!
+        val clientId = prefs.getString("client_id", "")!!
 
         if (token.isBlank()) {
             Toast.makeText(this, "请先在设置中填写 Token", Toast.LENGTH_LONG).show()
@@ -239,5 +243,19 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val REQ_AUDIO = 1001
+    }
+
+    private fun ensureDeviceIds() {
+        if (prefs.getString("device_id", null) == null) {
+            val androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
+            val derivedId = UUID.nameUUIDFromBytes(("lumis-$androidId").toByteArray())
+            prefs.edit().putString("device_id", derivedId.toString()).apply()
+            Log.i(tag, "自动生成 device_id: $derivedId")
+        }
+        if (prefs.getString("client_id", null) == null) {
+            val clientId = UUID.randomUUID().toString()
+            prefs.edit().putString("client_id", clientId).apply()
+            Log.i(tag, "自动生成 client_id: $clientId")
+        }
     }
 }
