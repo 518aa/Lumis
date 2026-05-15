@@ -1,0 +1,23 @@
+# ── lumis-mcp ──
+lumis-mcp/__pycache__/
+lumis-mcp/data/users/
+lumis-mcp/data/active_user.json
+lumis-mcp/data/progress.json
+lumis-mcp/data/progress.json.bak
+*.pyc
+
+# ── LumisAndroid ──
+LumisAndroid/.gradle/
+LumisAndroid/build/
+LumisAndroid/app/build/
+LumisAndroid/local.properties
+*.apk
+*.aab
+*.jks
+
+# ── 通用 ──
+.DS_Store
+.idea/
+*.iml
+.env
+.omc/

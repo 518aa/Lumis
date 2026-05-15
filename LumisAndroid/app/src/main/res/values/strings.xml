@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lumis 英语老师</string>
+    <string name="status_idle">点击开始上课</string>
+    <string name="status_connecting">正在连接...</string>
+    <string name="status_listening">我在听...</string>
+    <string name="status_speaking">Lumis 说话中...</string>
+    <string name="btn_start">开始上课</string>
+    <string name="btn_stop">结束对话</string>
+    <string name="settings_title">设置</string>
+</resources>
