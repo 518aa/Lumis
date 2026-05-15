@@ -16,7 +16,7 @@ if sys.platform == "win32":
 mcp = FastMCP("Lumis-English-Course")
 
 BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
-CURRENT_DEVICE_FILE = os.path.join(BASE_DIR, "_current_device.json")
+CURRENT_SHIBIE_FILE = os.path.join(BASE_DIR, "_current_shibie.json")
 LEGACY_PROGRESS_FILE = os.path.join(BASE_DIR, "progress.json")
 
 
@@ -31,60 +31,60 @@ def _default_progress():
     }
 
 
-# ── 设备上下文 ──
+# ── shibie_id 上下文 ──
 
-def _set_current_device(device_id: str):
+def _set_current_shibie(shibie_id: str):
     os.makedirs(BASE_DIR, exist_ok=True)
-    with open(CURRENT_DEVICE_FILE, "w", encoding="utf-8") as f:
-        json.dump({"device_id": device_id}, f, ensure_ascii=False)
+    with open(CURRENT_SHIBIE_FILE, "w", encoding="utf-8") as f:
+        json.dump({"shibie_id": shibie_id}, f, ensure_ascii=False)
 
 
-def _get_current_device() -> str:
-    if os.path.exists(CURRENT_DEVICE_FILE):
-        with open(CURRENT_DEVICE_FILE, "r", encoding="utf-8") as f:
-            return json.load(f).get("device_id", "default")
+def _get_current_shibie() -> str:
+    if os.path.exists(CURRENT_SHIBIE_FILE):
+        with open(CURRENT_SHIBIE_FILE, "r", encoding="utf-8") as f:
+            return json.load(f).get("shibie_id", "default")
     return "default"
 
 
-# ── 设备级存储路径 ──
+# ── shibie_id 级存储路径 ──
 
-def _device_dir(device_id: str = "") -> str:
-    did = device_id or _get_current_device()
-    return os.path.join(BASE_DIR, "devices", did)
-
-
-def _active_user_file(device_id: str = "") -> str:
-    return os.path.join(_device_dir(device_id), "active_user.json")
+def _shibie_dir(shibie_id: str = "") -> str:
+    sid = shibie_id or _get_current_shibie()
+    return os.path.join(BASE_DIR, "users", sid)
 
 
-def _users_dir(device_id: str = "") -> str:
-    return os.path.join(_device_dir(device_id), "users")
+def _active_user_file(shibie_id: str = "") -> str:
+    return os.path.join(_shibie_dir(shibie_id), "active_user.json")
 
 
-def _get_active_user(device_id: str = "") -> str | None:
-    af = _active_user_file(device_id)
+def _profiles_dir(shibie_id: str = "") -> str:
+    return os.path.join(_shibie_dir(shibie_id), "profiles")
+
+
+def _get_active_user(shibie_id: str = "") -> str | None:
+    af = _active_user_file(shibie_id)
     if os.path.exists(af):
         with open(af, "r", encoding="utf-8") as f:
             return json.load(f).get("name")
     return None
 
 
-def _set_active_user(name: str, device_id: str = ""):
-    d = _device_dir(device_id)
+def _set_active_user(name: str, shibie_id: str = ""):
+    d = _shibie_dir(shibie_id)
     os.makedirs(d, exist_ok=True)
-    with open(_active_user_file(device_id), "w", encoding="utf-8") as f:
+    with open(_active_user_file(shibie_id), "w", encoding="utf-8") as f:
         json.dump({"name": name, "updated_at": datetime.now().isoformat()}, f, ensure_ascii=False, indent=2)
 
 
-def _get_user_progress_file(name=None, device_id: str = "") -> str | None:
-    user = name or _get_active_user(device_id)
+def _get_user_progress_file(name=None, shibie_id: str = "") -> str | None:
+    user = name or _get_active_user(shibie_id)
     if not user:
         return None
-    return os.path.join(_users_dir(device_id), user, "progress.json")
+    return os.path.join(_profiles_dir(shibie_id), user, "progress.json")
 
 
-def _load_progress(device_id: str = "") -> dict | None:
-    pf = _get_user_progress_file(device_id=device_id)
+def _load_progress(shibie_id: str = "") -> dict | None:
+    pf = _get_user_progress_file(shibie_id=shibie_id)
     if pf is None:
         return None
     if os.path.exists(pf):
@@ -93,8 +93,8 @@ def _load_progress(device_id: str = "") -> dict | None:
     return _default_progress()
 
 
-def _save_progress(data: dict, device_id: str = ""):
-    pf = _get_user_progress_file(device_id=device_id)
+def _save_progress(data: dict, shibie_id: str = ""):
+    pf = _get_user_progress_file(shibie_id=shibie_id)
     if pf is None:
         logger.warning("save_progress: 没有活跃用户，无法保存")
         return
@@ -109,7 +109,7 @@ def _save_progress(data: dict, device_id: str = ""):
 def _migrate_legacy():
     if not os.path.exists(LEGACY_PROGRESS_FILE):
         return
-    target = os.path.join(BASE_DIR, "devices", "default", "users")
+    target = os.path.join(BASE_DIR, "users", "default", "profiles")
     if os.path.exists(target):
         return
     try:
@@ -121,7 +121,7 @@ def _migrate_legacy():
         with open(os.path.join(user_dir, "progress.json"), "w", encoding="utf-8") as f:
             json.dump(old, f, ensure_ascii=False, indent=2)
         _set_active_user("宝贝", "default")
-        _set_current_device("default")
+        _set_current_shibie("default")
         logger.info("已将旧进度迁移到 default/宝贝")
     except Exception as e:
         logger.error(f"迁移旧进度失败: {e}")
@@ -149,27 +149,27 @@ NO_USER_MSG = "⚠️ 还没有注册学员。请先问孩子的名字并调用 
 # ──────────────────────────────────────────
 
 @mcp.tool()
-def start_session(device_id: str = "") -> str:
-    """【最重要】每次新对话的第一个调用。返回当前设备上学员的姓名、课次、星星等全部上下文。
-    device_id 由客户端自动生成并传入，用于区分不同设备的数据。不传则使用上一次的设备。
+def start_session(shibie_id: str = "") -> str:
+    """【最重要】每次新对话的第一个调用。返回当前学员的姓名、课次、星星等全部上下文。
+    shibie_id 由客户端自动生成并隐藏附加到每条消息中，用于区分不同用户的数据。
     你必须在回复用户任何内容之前，先调用此工具。"""
-    did = device_id.strip()
-    if did:
-        _set_current_device(did)
+    sid = shibie_id.strip()
+    if sid:
+        _set_current_shibie(sid)
     else:
-        did = _get_current_device()
+        sid = _get_current_shibie()
 
-    name = _get_active_user(did)
+    name = _get_active_user(sid)
     if not name:
         return (
-            f"=== 无注册学员 (设备: {did}) ===\n"
+            f"=== 无注册学员 (识别码: {sid}) ===\n"
             "动作: 亲切地问孩子'你叫什么名字呀？'\n"
-            "得到名字后调用 register_child('名字') 注册。"
+            "得到名字后调用 register_child('名字', shibie_id) 注册。"
         )
 
-    pf = _get_user_progress_file(name, did)
+    pf = _get_user_progress_file(name, sid)
     if not pf or not os.path.exists(pf):
-        return f"=== 学员 {name} 数据丢失 (设备: {did}) ===\n动作: 请重新注册。"
+        return f"=== 学员 {name} 数据丢失 (识别码: {sid}) ===\n动作: 请重新注册。"
 
     with open(pf, "r", encoding="utf-8") as f:
         p = json.load(f)
@@ -188,7 +188,7 @@ def start_session(device_id: str = "") -> str:
 
     return (
         f"=== 会话恢复 ===\n"
-        f"设备: {did}\n"
+        f"识别码: {sid}\n"
         f"学员: {name}\n"
         f"模式: {mode_label}\n"
         f"进度: 第{n}课 / 共120课 (已完成{completed}课)\n"
@@ -206,23 +206,23 @@ def start_session(device_id: str = "") -> str:
 # ──────────────────────────────────────────
 
 @mcp.tool()
-def register_child(name: str, device_id: str = "") -> str:
+def register_child(name: str, shibie_id: str = "") -> str:
     """注册新学员或切换到已有学员。当孩子告诉你名字时调用。
     Args:
         name: 孩子的名字
-        device_id: 设备标识（可选，由客户端传入用于数据隔离）
+        shibie_id: 用户识别码（由客户端自动生成并传入）
     """
-    did = device_id.strip()
-    if did:
-        _set_current_device(did)
+    sid = shibie_id.strip()
+    if sid:
+        _set_current_shibie(sid)
     else:
-        did = _get_current_device()
+        sid = _get_current_shibie()
 
     name = name.strip()
     if not name:
         return "⚠️ 名字不能为空。"
 
-    user_dir = os.path.join(_users_dir(did), name)
+    user_dir = os.path.join(_profiles_dir(sid), name)
     pf = os.path.join(user_dir, "progress.json")
     is_new = not os.path.exists(pf)
 
@@ -233,7 +233,7 @@ def register_child(name: str, device_id: str = "") -> str:
         with open(pf, "w", encoding="utf-8") as f:
             json.dump(p, f, ensure_ascii=False, indent=2)
 
-    _set_active_user(name, did)
+    _set_active_user(name, sid)
 
     if is_new:
         return f"🎉 欢迎新学员 {name}！已创建学习档案，从第1课开始。"
@@ -251,16 +251,16 @@ def register_child(name: str, device_id: str = "") -> str:
 @mcp.tool()
 def get_active_child() -> str:
     """查询当前活跃学员。"""
-    did = _get_current_device()
-    name = _get_active_user(did)
+    sid = _get_current_shibie()
+    name = _get_active_user(sid)
     if not name:
         return NO_USER_MSG
-    p = _load_progress(did)
+    p = _load_progress(sid)
     if p is None:
         return NO_USER_MSG
     return (
         f"当前学员: {name}\n"
-        f"设备: {did}\n"
+        f"识别码: {sid}\n"
         f"进度: 第{p['current_lesson']}课 | {p['total_stars']}⭐\n"
         f"模式: {p.get('mode', 'teaching')}"
     )
@@ -268,18 +268,18 @@ def get_active_child() -> str:
 
 @mcp.tool()
 def list_children() -> str:
-    """列出当前设备上的所有学员。"""
-    did = _get_current_device()
-    ud = _users_dir(did)
-    if not os.path.exists(ud):
+    """列出当前识别码下的所有学员。"""
+    sid = _get_current_shibie()
+    pd = _profiles_dir(sid)
+    if not os.path.exists(pd):
         return "📋 还没有任何注册学员。"
-    names = [d for d in os.listdir(ud) if os.path.isdir(os.path.join(ud, d))]
+    names = [d for d in os.listdir(pd) if os.path.isdir(os.path.join(pd, d))]
     if not names:
         return "📋 还没有任何注册学员。"
-    active = _get_active_user(did)
-    lines = [f"📋 设备 {did} 共 {len(names)} 位学员:"]
+    active = _get_active_user(sid)
+    lines = [f"📋 识别码 {sid} 共 {len(names)} 位学员:"]
     for n in sorted(names):
-        pf = os.path.join(ud, n, "progress.json")
+        pf = os.path.join(pd, n, "progress.json")
         if os.path.exists(pf):
             with open(pf, "r", encoding="utf-8") as f:
                 p = json.load(f)

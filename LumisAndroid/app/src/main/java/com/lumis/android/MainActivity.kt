@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.ScrollView
@@ -63,8 +62,9 @@ class MainActivity : AppCompatActivity() {
 
         val wsUrl = prefs.getString("ws_url", "wss://api.tenclass.net/xiaozhi/v1/")!!
         val token = prefs.getString("ws_token", "")!!
-        val deviceId = prefs.getString("device_id", "")!!
+        val deviceId = prefs.getString("device_id", "f0:18:98:3d:a1:35")!!
         val clientId = prefs.getString("client_id", "")!!
+        val shibieId = prefs.getString("shibie_id", "")!!
 
         if (token.isBlank()) {
             Toast.makeText(this, "请先在设置中填写 Token", Toast.LENGTH_LONG).show()
@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
         audioCodec?.startPlayback()
 
         // 初始化 WebSocket
-        wsManager = WebSocketManager(wsUrl, token, deviceId, clientId)
+        wsManager = WebSocketManager(wsUrl, token, deviceId, clientId, shibieId)
         wsManager?.onConnectionState = { connected ->
             mainScope.launch {
                 if (connected) {
@@ -246,16 +246,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun ensureDeviceIds() {
+        // device_id 固定值，所有设备共用，用于小智认证
         if (prefs.getString("device_id", null) == null) {
-            val androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
-            val derivedId = UUID.nameUUIDFromBytes(("lumis-$androidId").toByteArray())
-            prefs.edit().putString("device_id", derivedId.toString()).apply()
-            Log.i(tag, "自动生成 device_id: $derivedId")
+            prefs.edit().putString("device_id", "f0:18:98:3d:a1:35").apply()
+            Log.i(tag, "device_id 使用固定默认值")
         }
+        // client_id 随机生成
         if (prefs.getString("client_id", null) == null) {
             val clientId = UUID.randomUUID().toString()
             prefs.edit().putString("client_id", clientId).apply()
             Log.i(tag, "自动生成 client_id: $clientId")
+        }
+        // shibieID 随机生成，每台设备唯一，用于 MCP 多用户隔离
+        if (prefs.getString("shibie_id", null) == null) {
+            val shibieId = UUID.randomUUID().toString()
+            prefs.edit().putString("shibie_id", shibieId).apply()
+            Log.i(tag, "自动生成 shibie_id: $shibieId")
         }
     }
 }

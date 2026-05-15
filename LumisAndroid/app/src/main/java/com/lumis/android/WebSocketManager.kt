@@ -14,7 +14,8 @@ class WebSocketManager(
     private val wsUrl: String,
     private val token: String,
     private val deviceId: String,
-    private val clientId: String
+    private val clientId: String,
+    private val shibieId: String
 ) {
     private val tag = "WebSocketManager"
     private val client = OkHttpClient.Builder()
@@ -83,7 +84,7 @@ class WebSocketManager(
             .build()
 
         webSocket = client.newWebSocket(request, listener)
-        Log.i(tag, "正在连接: $wsUrl")
+        Log.i(tag, "正在连接: $wsUrl, shibieId: $shibieId")
     }
 
     fun disconnect() {
@@ -105,32 +106,37 @@ class WebSocketManager(
         val msg = Protocol.ListenControl(
             session_id = sessionId,
             state = "start",
-            mode = "auto"
+            mode = "auto",
+            shibie_id = shibieId
         )
         sendText(Protocol.toJson(msg))
-        Log.d(tag, "发送 listen start")
+        Log.d(tag, "发送 listen start, shibieId: $shibieId")
     }
 
     fun sendListenStop() {
         val msg = Protocol.ListenControl(
             session_id = sessionId,
             state = "stop",
-            mode = "auto"
+            mode = "auto",
+            shibie_id = shibieId
         )
         sendText(Protocol.toJson(msg))
         Log.d(tag, "发送 listen stop")
     }
 
     fun sendAbort() {
-        val msg = Protocol.AbortMessage(session_id = sessionId)
+        val msg = Protocol.AbortMessage(
+            session_id = sessionId,
+            shibie_id = shibieId
+        )
         sendText(Protocol.toJson(msg))
         Log.d(tag, "发送 abort")
     }
 
     private fun sendHello() {
-        val hello = Protocol.ClientHello()
+        val hello = Protocol.ClientHello(shibie_id = shibieId)
         sendText(Protocol.toJson(hello))
-        Log.d(tag, "发送 ClientHello")
+        Log.d(tag, "发送 ClientHello, shibieId: $shibieId")
     }
 
     private fun handleServerHello(msg: Map<String, Any>) {
