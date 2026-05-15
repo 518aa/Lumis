@@ -22,8 +22,7 @@ object Protocol {
         val type: String = "hello",
         val version: Int = 1,
         val transport: String = "websocket",
-        val audio_params: AudioParamsField = AudioParamsField(),
-        val shibie_id: String = ""
+        val audio_params: AudioParamsField = AudioParamsField()
     )
 
     data class AudioParamsField(
@@ -37,15 +36,13 @@ object Protocol {
         val session_id: String,
         val type: String = "listen",
         val state: String,       // "start" | "stop"
-        val mode: String = "auto", // "auto" | "manual"
-        val shibie_id: String = ""
+        val mode: String = "auto" // "auto" | "manual"
     )
 
     data class AbortMessage(
         val session_id: String,
         val type: String = "abort",
-        val reason: String = "none",
-        val shibie_id: String = ""
+        val reason: String = "none"
     )
 
     // --- 接收的消息 ---

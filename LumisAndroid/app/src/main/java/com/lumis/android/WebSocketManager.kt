@@ -84,7 +84,7 @@ class WebSocketManager(
             .build()
 
         webSocket = client.newWebSocket(request, listener)
-        Log.i(tag, "正在连接: $wsUrl, shibieId: $shibieId")
+        Log.i(tag, "正在连接: $wsUrl")
     }
 
     fun disconnect() {
@@ -106,37 +106,32 @@ class WebSocketManager(
         val msg = Protocol.ListenControl(
             session_id = sessionId,
             state = "start",
-            mode = "auto",
-            shibie_id = shibieId
+            mode = "auto"
         )
         sendText(Protocol.toJson(msg))
-        Log.d(tag, "发送 listen start, shibieId: $shibieId")
+        Log.d(tag, "发送 listen start")
     }
 
     fun sendListenStop() {
         val msg = Protocol.ListenControl(
             session_id = sessionId,
             state = "stop",
-            mode = "auto",
-            shibie_id = shibieId
+            mode = "auto"
         )
         sendText(Protocol.toJson(msg))
         Log.d(tag, "发送 listen stop")
     }
 
     fun sendAbort() {
-        val msg = Protocol.AbortMessage(
-            session_id = sessionId,
-            shibie_id = shibieId
-        )
+        val msg = Protocol.AbortMessage(session_id = sessionId)
         sendText(Protocol.toJson(msg))
         Log.d(tag, "发送 abort")
     }
 
     private fun sendHello() {
-        val hello = Protocol.ClientHello(shibie_id = shibieId)
+        val hello = Protocol.ClientHello()
         sendText(Protocol.toJson(hello))
-        Log.d(tag, "发送 ClientHello, shibieId: $shibieId")
+        Log.d(tag, "发送 ClientHello")
     }
 
     private fun handleServerHello(msg: Map<String, Any>) {
@@ -148,8 +143,22 @@ class WebSocketManager(
         Log.i(tag, "ServerHello 收到，连接就绪")
         updateConnectionState(true)
 
-        // 连接就绪后自动开始监听
+        // 连接就绪后发送隐藏文本指令，告知 AI 用户的 shibie_id
+        sendHiddenIdentityMessage()
+
+        // 然后开始监听
         sendListenStart()
+    }
+
+    /**
+     * 隐藏发送用户身份指令给 AI。
+     * 以 STT 文本格式发送，AI 会作为用户消息接收并执行指令。
+     */
+    private fun sendHiddenIdentityMessage() {
+        val instruction = "[LUMIS_CMD]我的用户身份是shibie_id=$shibieId，请你通过mcp工具查询对应shibie_id用户的用户名、课程进度和获得的星星总数量信息，后续对话基于查询到的信息和用户对话反馈进行教学，这条消息只需要按照系统prompt的要求向用户回复问候信息就行[/LUMIS_CMD]"
+        val sttMessage = """{"type":"stt","text":"$instruction","session_id":"$sessionId"}"""
+        sendText(sttMessage)
+        Log.i(tag, "已发送隐藏身份指令, shibieId: $shibieId")
     }
 
     private fun updateConnectionState(connected: Boolean) {
