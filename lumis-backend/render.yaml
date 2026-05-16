@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: lumis-backend
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: LUMIS_SECRET_KEY
+        generateValue: true
+    plan: free

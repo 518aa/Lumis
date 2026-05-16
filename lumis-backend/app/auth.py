@@ -8,6 +8,8 @@ from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, Header
 from typing import Optional
 
+from sqlalchemy import text
+
 from app.database import get_db
 
 SECRET_KEY = os.environ.get("LUMIS_SECRET_KEY", "lumis-dev-secret-key-change-in-production")
@@ -54,7 +56,7 @@ def get_current_account_id(authorization: str = Header(..., alias="Authorization
 
 
 def get_current_account(account_id: int = Depends(get_current_account_id), db=Depends(get_db)) -> dict:
-    row = db.execute("SELECT * FROM accounts WHERE id = ?", (account_id,)).fetchone()
+    row = db.execute(text("SELECT * FROM accounts WHERE id = :id"), {"id": account_id}).fetchone()
     if not row:
         raise HTTPException(status_code=404, detail="Account not found")
-    return dict(row)
+    return dict(row._mapping)

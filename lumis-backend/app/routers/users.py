@@ -5,8 +5,9 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
+from sqlalchemy import text
 
-from app.database import get_db
+from app.database import get_db, _now
 
 router = APIRouter()
 
@@ -36,16 +37,15 @@ class SwitchModeBody(BaseModel):
 # ── 辅助函数 ──────────────────────────────────────────────
 
 def _row_to_dict(row) -> dict:
-    """将 sqlite3.Row 转为可序列化字典"""
-    d = dict(row)
+    d = dict(row._mapping)
     d["completed_lessons"] = json.loads(d["completed_lessons"])
     return d
 
 
-def _write_sync_log(conn, shibie_id: str, action: str, payload: dict):
-    conn.execute(
-        "INSERT INTO sync_logs (shibie_id, action, payload) VALUES (?, ?, ?)",
-        (shibie_id, action, json.dumps(payload, ensure_ascii=False)),
+def _write_sync_log(session, shibie_id: str, action: str, payload: dict):
+    session.execute(
+        text("INSERT INTO sync_logs (shibie_id, action, payload, created_at) VALUES (:sid, :action, :payload, :now)"),
+        {"sid": shibie_id, "action": action, "payload": json.dumps(payload, ensure_ascii=False), "now": _now()},
     )
 
 
@@ -61,10 +61,9 @@ def _err(msg: str):
 
 @router.get("/user/lookup/{query}")
 def lookup_user(query: str, db=Depends(get_db)):
-    """按昵称或 shibie_id 前缀模糊查找用户（MCP fallback 用）"""
     row = db.execute(
-        "SELECT * FROM users WHERE name = ? OR shibie_id LIKE ? LIMIT 1",
-        (query, f"{query}%"),
+        text("SELECT * FROM users WHERE name = :name OR shibie_id LIKE :sid LIMIT 1"),
+        {"name": query, "sid": f"{query}%"},
     ).fetchone()
     if not row:
         return _err("用户不存在")
@@ -74,7 +73,7 @@ def lookup_user(query: str, db=Depends(get_db)):
 @router.get("/user/{shibie_id}")
 def get_user(shibie_id: str, db=Depends(get_db)):
     row = db.execute(
-        "SELECT * FROM users WHERE shibie_id = ?", (shibie_id,)
+        text("SELECT * FROM users WHERE shibie_id = :sid"), {"sid": shibie_id}
     ).fetchone()
     if not row:
         return _err("用户不存在")
@@ -84,29 +83,28 @@ def get_user(shibie_id: str, db=Depends(get_db)):
 @router.post("/user/ensure")
 def ensure_user(body: EnsureUserBody, db=Depends(get_db)):
     row = db.execute(
-        "SELECT * FROM users WHERE shibie_id = ?", (body.shibie_id,)
+        text("SELECT * FROM users WHERE shibie_id = :sid"), {"sid": body.shibie_id}
     ).fetchone()
 
     if row:
         if body.name:
             db.execute(
-                "UPDATE users SET name = ?, updated_at = datetime('now') WHERE shibie_id = ?",
-                (body.name, body.shibie_id),
+                text("UPDATE users SET name = :name, updated_at = :now WHERE shibie_id = :sid"),
+                {"name": body.name, "now": _now(), "sid": body.shibie_id},
             )
             db.commit()
             row = db.execute(
-                "SELECT * FROM users WHERE shibie_id = ?", (body.shibie_id,)
+                text("SELECT * FROM users WHERE shibie_id = :sid"), {"sid": body.shibie_id}
             ).fetchone()
         return _ok(_row_to_dict(row))
 
     db.execute(
-        """INSERT INTO users (shibie_id, name)
-           VALUES (?, ?)""",
-        (body.shibie_id, body.name),
+        text("INSERT INTO users (shibie_id, name, created_at, updated_at) VALUES (:sid, :name, :now, :now)"),
+        {"sid": body.shibie_id, "name": body.name, "now": _now()},
     )
     db.commit()
     row = db.execute(
-        "SELECT * FROM users WHERE shibie_id = ?", (body.shibie_id,)
+        text("SELECT * FROM users WHERE shibie_id = :sid"), {"sid": body.shibie_id}
     ).fetchone()
     return _ok(_row_to_dict(row))
 
@@ -116,15 +114,15 @@ def ensure_user(body: EnsureUserBody, db=Depends(get_db)):
 @router.post("/internal/add-stars")
 def add_stars(body: AddStarsBody, db=Depends(get_db)):
     row = db.execute(
-        "SELECT * FROM users WHERE shibie_id = ?", (body.shibie_id,)
+        text("SELECT * FROM users WHERE shibie_id = :sid"), {"sid": body.shibie_id}
     ).fetchone()
     if not row:
         return _err("用户不存在")
 
-    new_stars = row["stars"] + body.count
+    new_stars = row._mapping["stars"] + body.count
     db.execute(
-        "UPDATE users SET stars = ?, updated_at = datetime('now') WHERE shibie_id = ?",
-        (new_stars, body.shibie_id),
+        text("UPDATE users SET stars = :stars, updated_at = :now WHERE shibie_id = :sid"),
+        {"stars": new_stars, "now": _now(), "sid": body.shibie_id},
     )
     _write_sync_log(db, body.shibie_id, "add_stars", {"count": body.count, "new_total": new_stars})
     db.commit()
@@ -134,30 +132,31 @@ def add_stars(body: AddStarsBody, db=Depends(get_db)):
 @router.post("/internal/complete-lesson")
 def complete_lesson(body: CompleteLessonBody, db=Depends(get_db)):
     row = db.execute(
-        "SELECT * FROM users WHERE shibie_id = ?", (body.shibie_id,)
+        text("SELECT * FROM users WHERE shibie_id = :sid"), {"sid": body.shibie_id}
     ).fetchone()
     if not row:
         return _err("用户不存在")
 
-    completed = json.loads(row["completed_lessons"])
+    completed = json.loads(row._mapping["completed_lessons"])
     if body.lesson_number not in completed:
         completed.append(body.lesson_number)
 
-    next_lesson = max(row["current_lesson"], body.lesson_number + 1)
+    next_lesson = max(row._mapping["current_lesson"], body.lesson_number + 1)
 
     db.execute(
-        """UPDATE users
-           SET completed_lessons = ?, current_lesson = ?, updated_at = datetime('now')
-           WHERE shibie_id = ?""",
-        (json.dumps(completed), next_lesson, body.shibie_id),
+        text("""UPDATE users
+           SET completed_lessons = :completed, current_lesson = :next_lesson, updated_at = :now
+           WHERE shibie_id = :sid"""),
+        {"completed": json.dumps(completed), "next_lesson": next_lesson, "now": _now(), "sid": body.shibie_id},
     )
 
+    now = _now()
     db.execute(
-        """INSERT INTO lesson_progress (shibie_id, lesson_number, status, completed_at)
-           VALUES (?, ?, 'completed', datetime('now'))
+        text("""INSERT INTO lesson_progress (shibie_id, lesson_number, status, completed_at)
+           VALUES (:sid, :lesson_num, 'completed', :now)
            ON CONFLICT(shibie_id, lesson_number)
-           DO UPDATE SET status='completed', completed_at=datetime('now')""",
-        (body.shibie_id, body.lesson_number),
+           DO UPDATE SET status='completed', completed_at=:now"""),
+        {"sid": body.shibie_id, "lesson_num": body.lesson_number, "now": now},
     )
 
     _write_sync_log(db, body.shibie_id, "complete_lesson", {"lesson_number": body.lesson_number})
@@ -168,14 +167,14 @@ def complete_lesson(body: CompleteLessonBody, db=Depends(get_db)):
 @router.post("/internal/switch-mode")
 def switch_mode(body: SwitchModeBody, db=Depends(get_db)):
     row = db.execute(
-        "SELECT * FROM users WHERE shibie_id = ?", (body.shibie_id,)
+        text("SELECT * FROM users WHERE shibie_id = :sid"), {"sid": body.shibie_id}
     ).fetchone()
     if not row:
         return _err("用户不存在")
 
     db.execute(
-        "UPDATE users SET mode = ?, updated_at = datetime('now') WHERE shibie_id = ?",
-        (body.mode, body.shibie_id),
+        text("UPDATE users SET mode = :mode, updated_at = :now WHERE shibie_id = :sid"),
+        {"mode": body.mode, "now": _now(), "sid": body.shibie_id},
     )
     _write_sync_log(db, body.shibie_id, "switch_mode", {"mode": body.mode})
     db.commit()
@@ -185,7 +184,7 @@ def switch_mode(body: SwitchModeBody, db=Depends(get_db)):
 @router.get("/internal/user-state/{shibie_id}")
 def get_user_state(shibie_id: str, db=Depends(get_db)):
     row = db.execute(
-        "SELECT * FROM users WHERE shibie_id = ?", (shibie_id,)
+        text("SELECT * FROM users WHERE shibie_id = :sid"), {"sid": shibie_id}
     ).fetchone()
     if not row:
         return _err("用户不存在")
@@ -199,17 +198,16 @@ class SetLessonBody(BaseModel):
 
 @router.post("/internal/set-lesson")
 def set_lesson(body: SetLessonBody, db=Depends(get_db)):
-    """直接设置当前课次（跳课用），不修改已完成列表"""
     if not 1 <= body.lesson_number <= 120:
         return _err("课次超出范围 1-120")
     row = db.execute(
-        "SELECT * FROM users WHERE shibie_id = ?", (body.shibie_id,)
+        text("SELECT * FROM users WHERE shibie_id = :sid"), {"sid": body.shibie_id}
     ).fetchone()
     if not row:
         return _err("用户不存在")
     db.execute(
-        "UPDATE users SET current_lesson = ?, updated_at = datetime('now') WHERE shibie_id = ?",
-        (body.lesson_number, body.shibie_id),
+        text("UPDATE users SET current_lesson = :lesson, updated_at = :now WHERE shibie_id = :sid"),
+        {"lesson": body.lesson_number, "now": _now(), "sid": body.shibie_id},
     )
     _write_sync_log(db, body.shibie_id, "set_lesson", {"lesson_number": body.lesson_number})
     db.commit()
@@ -223,17 +221,16 @@ class UpdateNameBody(BaseModel):
 
 @router.post("/internal/update-name")
 def update_name(body: UpdateNameBody, db=Depends(get_db)):
-    """更新用户昵称（MCP 调用）"""
     if not body.name.strip():
         return _err("名字不能为空")
     row = db.execute(
-        "SELECT * FROM users WHERE shibie_id = ?", (body.shibie_id,)
+        text("SELECT * FROM users WHERE shibie_id = :sid"), {"sid": body.shibie_id}
     ).fetchone()
     if not row:
         return _err("用户不存在")
     db.execute(
-        "UPDATE users SET name = ?, updated_at = datetime('now') WHERE shibie_id = ?",
-        (body.name.strip(), body.shibie_id),
+        text("UPDATE users SET name = :name, updated_at = :now WHERE shibie_id = :sid"),
+        {"name": body.name.strip(), "now": _now(), "sid": body.shibie_id},
     )
     _write_sync_log(db, body.shibie_id, "update_name", {"name": body.name.strip()})
     db.commit()

@@ -1,95 +1,106 @@
-"""SQLite 数据库连接与初始化"""
+"""数据库连接与初始化 — 自动适配 SQLite (本地) / PostgreSQL (生产)"""
 
-import sqlite3
 import json
-from pathlib import Path
+import os
 
-DB_PATH = Path(__file__).resolve().parent.parent / "lumis.db"
+from sqlalchemy import create_engine, text, MetaData, Table, Column, Integer, String, Text
+from sqlalchemy.orm import Session
 
-_SCHEMA = """
-CREATE TABLE IF NOT EXISTS users (
-    shibie_id TEXT PRIMARY KEY,
-    name TEXT NOT NULL DEFAULT '',
-    stars INTEGER NOT NULL DEFAULT 0,
-    current_lesson INTEGER NOT NULL DEFAULT 1,
-    completed_lessons TEXT NOT NULL DEFAULT '[]',
-    mode TEXT NOT NULL DEFAULT 'teaching',
-    created_at TEXT NOT NULL DEFAULT (datetime('now')),
-    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
+# ── 环境判断 ──────────────────────────────────────────────
 
-CREATE TABLE IF NOT EXISTS accounts (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    email TEXT UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
-    username TEXT NOT NULL DEFAULT '',
-    avatar TEXT DEFAULT '',
-    created_at TEXT NOT NULL DEFAULT (datetime('now')),
-    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
+DATABASE_URL = os.getenv("DATABASE_URL", "")
+IS_POSTGRES = DATABASE_URL.startswith("postgres://") or DATABASE_URL.startswith("postgresql://")
 
-CREATE TABLE IF NOT EXISTS devices (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    account_id INTEGER NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
-    shibie_id TEXT UNIQUE NOT NULL REFERENCES users(shibie_id),
-    device_name TEXT DEFAULT '',
-    is_active INTEGER NOT NULL DEFAULT 1,
-    created_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
+if IS_POSTGRES:
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+else:
+    from pathlib import Path
+    _db_path = Path(__file__).resolve().parent.parent / "lumis.db"
+    engine = create_engine(f"sqlite:///{_db_path}", connect_args={"check_same_thread": False})
 
-CREATE TABLE IF NOT EXISTS sync_logs (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    shibie_id TEXT NOT NULL,
-    action TEXT NOT NULL,
-    payload TEXT NOT NULL DEFAULT '{}',
-    created_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
+metadata = MetaData()
 
-CREATE TABLE IF NOT EXISTS lesson_progress (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    shibie_id TEXT NOT NULL,
-    lesson_number INTEGER NOT NULL,
-    stars_earned INTEGER NOT NULL DEFAULT 0,
-    status TEXT NOT NULL DEFAULT 'in_progress',
-    completed_at TEXT,
-    UNIQUE(shibie_id, lesson_number)
-);
+# ── 表定义 (兼容 SQLite / PostgreSQL) ─────────────────────
 
-CREATE INDEX IF NOT EXISTS idx_devices_account ON devices(account_id);
-CREATE INDEX IF NOT EXISTS idx_devices_shibie ON devices(shibie_id);
-"""
+users = Table("users", metadata,
+    Column("shibie_id", String, primary_key=True),
+    Column("name", String, nullable=False, server_default=""),
+    Column("stars", Integer, nullable=False, server_default="0"),
+    Column("current_lesson", Integer, nullable=False, server_default="1"),
+    Column("completed_lessons", Text, nullable=False, server_default="[]"),
+    Column("mode", String, nullable=False, server_default="teaching"),
+    Column("created_at", Text, server_default=""),
+    Column("updated_at", Text, server_default=""),
+)
 
-_SEED_DATA = [
-    ("test-user", "丽丽", 10, 9, json.dumps([1, 2, 3, 4, 5, 6, 7, 8]), "teaching"),
-]
+accounts = Table("accounts", metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("email", String, unique=True, nullable=False),
+    Column("password_hash", String, nullable=False),
+    Column("username", String, server_default=""),
+    Column("avatar", String, server_default=""),
+    Column("created_at", Text, server_default=""),
+    Column("updated_at", Text, server_default=""),
+)
+
+devices = Table("devices", metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("account_id", Integer, nullable=False),
+    Column("shibie_id", String, unique=True),
+    Column("device_name", String, server_default=""),
+    Column("is_active", Integer, server_default="1"),
+    Column("created_at", Text, server_default=""),
+)
+
+sync_logs = Table("sync_logs", metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("shibie_id", String, nullable=False),
+    Column("action", String, nullable=False),
+    Column("payload", Text, server_default="{}"),
+    Column("created_at", Text, server_default=""),
+)
+
+lesson_progress = Table("lesson_progress", metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("shibie_id", String, nullable=False),
+    Column("lesson_number", Integer, nullable=False),
+    Column("stars_earned", Integer, server_default="0"),
+    Column("status", String, server_default="in_progress"),
+    Column("completed_at", Text),
+)
+
+# ── 辅助函数 ──────────────────────────────────────────────
+
+def _now():
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
 
 
 def get_db():
-    conn = sqlite3.connect(str(DB_PATH))
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = ON")
+    """FastAPI Depends: 返回 SQLAlchemy Session"""
+    session = Session(engine)
     try:
-        yield conn
+        yield session
     finally:
-        conn.close()
+        session.close()
 
 
 def init_db():
-    conn = sqlite3.connect(str(DB_PATH))
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = ON")
-    try:
-        conn.executescript(_SCHEMA)
+    """建表 + 种子数据"""
+    metadata.create_all(engine)
 
-        existing = conn.execute(
-            "SELECT 1 FROM users WHERE shibie_id = ?", (_SEED_DATA[0][0],)
+    with Session(engine) as session:
+        existing = session.execute(
+            text("SELECT 1 FROM users WHERE shibie_id = :sid"), {"sid": "test-user"}
         ).fetchone()
         if not existing:
-            conn.execute(
-                """INSERT INTO users (shibie_id, name, stars, current_lesson, completed_lessons, mode)
-                   VALUES (?, ?, ?, ?, ?, ?)""",
-                _SEED_DATA[0],
-            )
-            conn.commit()
-    finally:
-        conn.close()
+            session.execute(users.insert().values(
+                shibie_id="test-user", name="丽丽", stars=10,
+                current_lesson=9,
+                completed_lessons=json.dumps([1, 2, 3, 4, 5, 6, 7, 8]),
+                mode="teaching",
+                created_at=_now(), updated_at=_now(),
+            ))
+            session.commit()
