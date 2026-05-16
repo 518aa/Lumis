@@ -18,6 +18,10 @@ LumisAndroid/local.properties
 *.aab
 *.jks
 
+# ── lumis-backend ──
+lumis-backend/__pycache__/
+lumis-backend/*.db
+
 # ── 通用 ──
 .DS_Store
 .idea/

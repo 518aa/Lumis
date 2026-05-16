@@ -39,6 +39,13 @@ object Protocol {
         val mode: String = "auto" // "auto" | "manual"
     )
 
+    data class ListenDetect(
+        val session_id: String,
+        val type: String = "listen",
+        val state: String = "detect",
+        val text: String
+    )
+
     data class AbortMessage(
         val session_id: String,
         val type: String = "abort",

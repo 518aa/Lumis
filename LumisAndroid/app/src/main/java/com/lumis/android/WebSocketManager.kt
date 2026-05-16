@@ -34,6 +34,15 @@ class WebSocketManager(
     var onAudioData: OnAudioData? = null
     var onConnectionState: OnConnectionState? = null
 
+    // 动态用户信息（由 MainActivity 设置）
+    private var userInfoText: String = "我叫丽丽，10颗星，第9课。"
+
+    fun setUserInfo(name: String, stars: Int, lesson: Int, shibieId: String) {
+        val shortId = shibieId.take(8)
+        userInfoText = "$shortId ${name} ${stars}星 L${lesson}"
+        Log.i(tag, "用户信息已更新: $userInfoText (full: $shibieId)")
+    }
+
     private val listener = object : WebSocketListener() {
         override fun onOpen(webSocket: WebSocket, response: Response) {
             Log.i(tag, "WebSocket 已连接")
@@ -143,22 +152,24 @@ class WebSocketManager(
         Log.i(tag, "ServerHello 收到，连接就绪")
         updateConnectionState(true)
 
-        // 连接就绪后发送隐藏文本指令，告知 AI 用户的 shibie_id
-        sendHiddenIdentityMessage()
+        // 先发用户状态，再开始监听
+        sendUserState()
 
-        // 然后开始监听
+        // 开始监听
         sendListenStart()
     }
 
     /**
-     * 隐藏发送用户身份指令给 AI。
-     * 以 STT 文本格式发送，AI 会作为用户消息接收并执行指令。
+     * 通过 listen/detect 注入用户状态（限15字以内）。
+     * py-xiaozhi 实测：detect 接受短文本并传递给 LLM。
      */
-    private fun sendHiddenIdentityMessage() {
-        val instruction = "[LUMIS_CMD]我的用户身份是shibie_id=$shibieId，请你通过mcp工具查询对应shibie_id用户的用户名、课程进度和获得的星星总数量信息，后续对话基于查询到的信息和用户对话反馈进行教学，这条消息只需要按照系统prompt的要求向用户回复问候信息就行[/LUMIS_CMD]"
-        val sttMessage = """{"type":"stt","text":"$instruction","session_id":"$sessionId"}"""
-        sendText(sttMessage)
-        Log.i(tag, "已发送隐藏身份指令, shibieId: $shibieId")
+    private fun sendUserState() {
+        val detectMsg = Protocol.ListenDetect(
+            session_id = sessionId,
+            text = userInfoText
+        )
+        sendText(Protocol.toJson(detectMsg))
+        Log.i(tag, "=== 已通过 detect 注入用户状态: $userInfoText ===")
     }
 
     private fun updateConnectionState(connected: Boolean) {
