@@ -23,7 +23,7 @@ class LoginActivity : AppCompatActivity() {
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
-        val backendUrl = prefs.getString("backend_url", "http://192.168.31.115:8900")!!
+        val backendUrl = prefs.getString("backend_url", "https://lumis.tpr.wales")!!
         api = LumisApi(backendUrl)
         binding.tvBackendUrl.text = "后端: $backendUrl"
 

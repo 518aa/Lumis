@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun fetchUserProfile() {
         val token = prefs.getString("access_token", null) ?: return
-        val backendUrl = prefs.getString("backend_url", "http://192.168.31.115:8900")!!
+        val backendUrl = prefs.getString("backend_url", "https://lumis.tpr.wales")!!
         val api = LumisApi(backendUrl)
 
         api.getProfile(token) { result ->
@@ -205,7 +205,7 @@ class MainActivity : AppCompatActivity() {
                 cont.resume(false) {}
                 return@suspendCancellableCoroutine
             }
-            val backendUrl = prefs.getString("backend_url", "http://192.168.31.115:8900")!!
+            val backendUrl = prefs.getString("backend_url", "https://lumis.tpr.wales")!!
             val api = LumisApi(backendUrl)
             api.getProfile(token) { result ->
                 result.onSuccess { profile ->

@@ -1,4 +1,5 @@
 from mcp.server.fastmcp import FastMCP
+import os
 import sys
 import logging
 
@@ -13,7 +14,7 @@ if sys.platform == "win32":
 
 mcp = FastMCP("Lumis-English-Course")
 
-BACKEND_URL = "http://127.0.0.1:8900"
+BACKEND_URL = os.environ.get("BACKEND_URL", "http://127.0.0.1:8900")
 
 
 def _make_client() -> httpx.Client:
