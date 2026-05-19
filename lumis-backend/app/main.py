@@ -19,7 +19,7 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.database import init_db
@@ -196,7 +196,10 @@ def download_apk():
             media_type="application/vnd.android.package-archive",
             filename="lumis.apk",
         )
-    return HTMLResponse("<h3>APK 暂未上传，请稍后再试。</h3>", status_code=404)
+    return RedirectResponse(
+        url="https://github.com/518aa/Lumis/releases/download/v1.0.0/app-debug.apk",
+        status_code=302,
+    )
 
 
 # APK 静态文件
@@ -212,8 +215,8 @@ def health():
 APP_VERSION = {
     "latest_version": "1.0.0",
     "min_version": "1.0.0",
-    "update_message": "",
-    "download_url": "",
+    "update_message": "新版本已发布，请更新体验！",
+    "download_url": "https://github.com/518aa/Lumis/releases/download/v1.0.0/app-debug.apk",
 }
 
 
