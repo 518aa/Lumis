@@ -135,7 +135,22 @@ body{min-height:100vh;display:flex;flex-direction:column;align-items:center;
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    init_db()
+    import logging, threading, time
+    logger = logging.getLogger("lumis")
+
+    def _init_with_retry():
+        for attempt in range(1, 4):
+            try:
+                init_db()
+                logger.info("init_db() succeeded (attempt %d)", attempt)
+                return
+            except Exception as e:
+                logger.warning("init_db() attempt %d failed: %s", attempt, e)
+                if attempt < 3:
+                    time.sleep(5)
+        logger.error("init_db() failed after 3 attempts")
+
+    threading.Thread(target=_init_with_retry, daemon=True).start()
     yield
 
 
