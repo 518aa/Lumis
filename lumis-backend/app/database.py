@@ -19,7 +19,13 @@ if IS_POSTGRES:
         DATABASE_URL += "?sslmode=require"
     elif "sslmode" not in DATABASE_URL:
         DATABASE_URL += "&sslmode=require"
-    engine = create_engine(DATABASE_URL, pool_pre_ping=True, pool_size=5, max_overflow=10)
+    engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=True,
+        pool_size=5,
+        max_overflow=10,
+        connect_args={"connect_timeout": 30},
+    )
 else:
     from pathlib import Path
     _db_path = Path(__file__).resolve().parent.parent / "lumis.db"
