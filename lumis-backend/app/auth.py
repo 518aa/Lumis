@@ -4,7 +4,7 @@ import os
 from datetime import datetime, timedelta, timezone
 
 from jose import jwt, JWTError
-from passlib.context import CryptContext
+import bcrypt as _bcrypt
 from fastapi import Depends, HTTPException, Header, Request
 from fastapi.responses import RedirectResponse
 from typing import Optional
@@ -18,25 +18,23 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 hours
 REFRESH_TOKEN_EXPIRE_DAYS = 30
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def hash_password(password: str) -> str:
+    return _bcrypt.hashpw(password.encode(), _bcrypt.gensalt()).decode()
+
+
+def verify_password(plain: str, hashed: str) -> bool:
+    return _bcrypt.checkpw(plain.encode(), hashed.encode())
 
 
 def verify_api_key(x_api_key: str = Header(None, alias="X-API-Key")) -> bool:
     """内部 API 鉴权：X-API-Key header 或 MCP 内部调用"""
     internal_key = os.environ.get("LUMIS_API_KEY", "")
     if not internal_key:
-        return True  # 未配置 key 时不强制鉴权
+        return True
     if x_api_key == internal_key:
         return True
     raise HTTPException(status_code=403, detail="Invalid API key")
-
-
-def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
-
-
-def verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(plain, hashed)
 
 
 def create_access_token(account_id: int) -> str:

@@ -50,17 +50,11 @@ def register(body: RegisterBody, db=Depends(get_db)):
         raise HTTPException(status_code=409, detail="邮箱已注册")
 
     username = body.username or body.email.split("@")[0]
-    result = db.execute(
-        text("INSERT INTO accounts (email, password_hash, username, created_at, updated_at) VALUES (:email, :ph, :username, :now, :now)"),
+    row = db.execute(
+        text("INSERT INTO accounts (email, password_hash, username, created_at, updated_at) VALUES (:email, :ph, :username, :now, :now) RETURNING id"),
         {"email": body.email, "ph": hash_password(body.password), "username": username, "now": _now()},
-    )
-
-    # 获取新插入的 account_id
-    account_id = result.lastrowid
-    # lastrowid 在 PostgreSQL 下可能不可靠，用 RETURNING 更安全
-    if account_id is None:
-        row = db.execute(text("SELECT lastval()")).fetchone()
-        account_id = row[0]
+    ).fetchone()
+    account_id = row[0]
 
     # 创建关联的 user（学习数据），shibie_id 冲突时自动生成新的
     shibie_id = body.shibie_id or str(uuid.uuid4())
