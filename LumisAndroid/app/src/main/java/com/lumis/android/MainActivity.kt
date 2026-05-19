@@ -249,7 +249,7 @@ class MainActivity : AppCompatActivity() {
         updateModeToggleUI()
 
         val shibieId = prefs.getString("shibie_id", "") ?: return
-        val backendUrl = prefs.getString("backend_url", "https://lumis.tpr.wales")!!
+        val backendUrl = prefs.getString("backend_url", "https://lumis-backend-spvs.onrender.com")!!
         val api = LumisApi(backendUrl)
         api.switchMode(shibieId, mode) { result ->
             runOnUiThread {
@@ -323,7 +323,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun fetchUserProfile() {
         val token = prefs.getString("access_token", null) ?: return
-        val backendUrl = prefs.getString("backend_url", "https://lumis.tpr.wales")!!
+        val backendUrl = prefs.getString("backend_url", "https://lumis-backend-spvs.onrender.com")!!
         val api = LumisApi(backendUrl)
 
         api.getProfile(token) { result ->
@@ -484,7 +484,7 @@ class MainActivity : AppCompatActivity() {
                 cont.resume(false) {}
                 return@suspendCancellableCoroutine
             }
-            val backendUrl = prefs.getString("backend_url", "https://lumis.tpr.wales")!!
+            val backendUrl = prefs.getString("backend_url", "https://lumis-backend-spvs.onrender.com")!!
             val api = LumisApi(backendUrl)
             api.getProfile(token) { result ->
                 result.onSuccess { profile ->
@@ -742,7 +742,7 @@ class MainActivity : AppCompatActivity() {
             .connectTimeout(5, java.util.concurrent.TimeUnit.SECONDS)
             .readTimeout(5, java.util.concurrent.TimeUnit.SECONDS)
             .build()
-        val backendUrl = prefs.getString("backend_url", "https://lumis.tpr.wales")!!
+        val backendUrl = prefs.getString("backend_url", "https://lumis-backend-spvs.onrender.com")!!
         val request = Request.Builder()
             .url("$backendUrl/api/app/version")
             .get()
@@ -837,7 +837,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showPaywallDialog() {
-        val backendUrl = prefs.getString("backend_url", "https://lumis.tpr.wales")!!
+        val backendUrl = prefs.getString("backend_url", "https://lumis-backend-spvs.onrender.com")!!
         val api = LumisApi(backendUrl)
         val sid = prefs.getString("shibie_id", "") ?: return
 

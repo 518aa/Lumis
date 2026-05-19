@@ -24,7 +24,7 @@ class LoginActivity : AppCompatActivity() {
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
-        val backendUrl = prefs.getString("backend_url", "https://lumis.tpr.wales")!!
+        val backendUrl = prefs.getString("backend_url", "https://lumis-backend-spvs.onrender.com")!!
         api = LumisApi(backendUrl)
 
         val existingToken = prefs.getString("access_token", null)

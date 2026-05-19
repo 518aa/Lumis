@@ -10,7 +10,7 @@ import java.io.IOException
  * Lumis 自建后端 API 客户端。
  * 负责注册/登录/获取用户资料等。
  */
-class LumisApi(private val baseUrl: String = "https://lumis.tpr.wales") {
+class LumisApi(private val baseUrl: String = "https://lumis-backend-spvs.onrender.com") {
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
