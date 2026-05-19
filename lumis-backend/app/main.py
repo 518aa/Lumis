@@ -1,21 +1,13 @@
 """FastAPI 入口"""
 
+import logging
 import os
-import sys
-import traceback
-
-# 调试：打印关键环境信息
-print(f"[Lumis] Python: {sys.version}")
-print(f"[Lumis] DATABASE_URL set: {bool(os.getenv('DATABASE_URL'))}")
-
-try:
-    from dotenv import load_dotenv
-    load_dotenv(Path(__file__).resolve().parent.parent / ".env.alipay")
-except Exception:
-    pass
-
+import threading
+import time
 from contextlib import asynccontextmanager
 from pathlib import Path
+
+logger = logging.getLogger("lumis")
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -146,9 +138,6 @@ body{min-height:100vh;display:flex;flex-direction:column;align-items:center;
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    import logging, threading, time
-    logger = logging.getLogger("lumis")
-
     def _init_with_retry():
         for attempt in range(1, 4):
             try:
