@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lumis 管理后台 — 用户管理</title>
+<style>
+:root{--bg-dark:#0B0E2D;--bg-card:rgba(30,34,88,0.6);--border:#2A2F6E;
+  --text:#fff;--dim:#A0A4D0;--gold:#FFD166;--cyan:#00E5FF;--orange:#FF6B35;
+  --red:#FF6B6B;--green:#4ADE80}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:var(--bg-dark);color:var(--text);min-height:100vh;display:flex}
+.sidebar{width:200px;min-height:100vh;background:rgba(20,24,68,0.9);
+  border-right:1px solid var(--border);padding:24px 0;flex-shrink:0}
+.sidebar h2{font-size:16px;color:var(--gold);padding:0 20px 20px;letter-spacing:1px}
+.sidebar a{display:block;padding:12px 20px;color:var(--dim);text-decoration:none;
+  font-size:14px;transition:all .2s;border-left:3px solid transparent}
+.sidebar a:hover{color:#fff;background:rgba(0,229,255,0.05)}
+.sidebar a.active{color:var(--cyan);background:rgba(0,229,255,0.08);border-left-color:var(--cyan)}
+.sidebar a.logout{color:var(--red);margin-top:24px}
+.main{flex:1;padding:32px;max-width:1200px}
+.main h1{font-size:22px;color:var(--gold);margin-bottom:20px}
+.toolbar{display:flex;gap:12px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
+.search{padding:8px 14px;border:1px solid var(--border);border-radius:8px;
+  background:rgba(11,14,45,0.8);color:#fff;font-size:13px;outline:none;width:260px}
+.search:focus{border-color:var(--cyan)}
+.btn{padding:8px 18px;border:none;border-radius:8px;font-size:13px;
+  cursor:pointer;font-weight:bold;transition:opacity .2s}
+.btn-cyan{background:var(--cyan);color:var(--bg-dark)}
+.btn:hover{opacity:.85}
+.info{font-size:13px;color:var(--dim)}
+table{width:100%;border-collapse:collapse;background:var(--bg-card);
+  border:1px solid var(--border);border-radius:8px;overflow:hidden}
+th{text-align:left;padding:10px 10px;font-size:11px;color:var(--dim);
+  border-bottom:1px solid var(--border);font-weight:normal;white-space:nowrap}
+td{padding:10px 10px;font-size:12px;border-bottom:1px solid rgba(42,47,110,0.3)}
+tr:hover td{background:rgba(0,229,255,0.03)}
+tr{cursor:pointer}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:bold}
+.badge-free{background:rgba(160,164,208,0.2);color:var(--dim)}
+.badge-paid{background:rgba(74,222,128,0.15);color:var(--green)}
+.badge-invited{background:rgba(0,229,255,0.15);color:var(--cyan)}
+.pager{display:flex;gap:8px;margin-top:16px;align-items:center;justify-content:center}
+.pager a{padding:6px 14px;border:1px solid var(--border);border-radius:6px;
+  color:var(--dim);text-decoration:none;font-size:13px}
+.pager a:hover{border-color:var(--cyan);color:var(--cyan)}
+.pager .cur{background:var(--cyan);color:var(--bg-dark);border-color:var(--cyan);font-weight:bold}
+.pager span{font-size:13px;color:var(--dim)}
+
+/* 详情弹窗 */
+.modal-bg{display:none;position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,0.6);z-index:100;align-items:center;justify-content:center}
+.modal-bg.show{display:flex}
+.modal{background:#1A1B4B;border:1px solid var(--border);border-radius:12px;
+  padding:24px;width:560px;max-height:80vh;overflow-y:auto;position:relative}
+.modal h2{font-size:18px;color:var(--gold);margin-bottom:16px}
+.modal .close{position:absolute;top:12px;right:16px;color:var(--dim);
+  cursor:pointer;font-size:20px;background:none;border:none}
+.modal .close:hover{color:#fff}
+.field{margin-bottom:12px;font-size:13px}
+.field .k{color:var(--dim);display:inline-block;width:100px}
+.field .v{color:#fff}
+.field .v a{color:var(--cyan);cursor:pointer;text-decoration:underline}
+.edit-row{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.edit-row select,.edit-row input{padding:6px 10px;border:1px solid var(--border);
+  border-radius:6px;background:rgba(11,14,45,0.8);color:#fff;font-size:12px}
+.edit-row button{padding:6px 14px;border:none;border-radius:6px;
+  background:var(--cyan);color:var(--bg-dark);font-size:12px;cursor:pointer;font-weight:bold}
+.sub-table{width:100%;border-collapse:collapse;margin-top:8px}
+.sub-table th{text-align:left;padding:6px 8px;font-size:11px;color:var(--dim);
+  border-bottom:1px solid var(--border)}
+.sub-table td{padding:6px 8px;font-size:11px;border-bottom:1px solid rgba(42,47,110,0.2)}
+@media(max-width:768px){
+  .sidebar{display:none}
+  .main{padding:16px}
+  .search{width:100%}
+}
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <h2>Lumis 管理</h2>
+  <a href="/admin">概览</a>
+  <a href="/admin/users" class="active">用户管理</a>
+  <a href="/admin/payments">支付记录</a>
+  <a href="/admin/withdrawals">提现审批</a>
+  <a href="/admin/logout" class="logout">退出登录</a>
+</nav>
+<div class="main">
+  <h1>用户管理</h1>
+  <div class="toolbar">
+    <form method="GET" action="/admin/users" style="display:flex;gap:8px">
+      <input class="search" name="q" value="{{ q }}" placeholder="搜索名字或 ID...">
+      <button class="btn btn-cyan" type="submit">搜索</button>
+      {% if q %}<a href="/admin/users" class="btn" style="background:var(--border);color:#fff;padding:8px 14px;border-radius:8px;font-size:13px;text-decoration:none">清除</a>{% endif %}
+    </form>
+    <span class="info">共 {{ total }} 条{% if q %}（搜索: {{ q }}）{% endif %}</span>
+  </div>
+
+  <table>
+    <tr><th>名字</th><th>ID</th><th>课次</th><th>星星</th><th>权限</th><th>火炬值</th><th>余额</th><th>注册时间</th></tr>
+    {% for u in users %}
+    <tr onclick="showDetail('{{ u.shibie_id }}')">
+      <td>{{ u.name or "-" }}</td>
+      <td style="font-size:10px;font-family:monospace;color:var(--dim)">{{ u.shibie_id[:12] }}...</td>
+      <td>L{{ u.current_lesson }}</td>
+      <td>⭐ {{ u.stars }}</td>
+      <td><span class="badge badge-{{ u.access_level }}">{{ u.access_level }}</span></td>
+      <td>{{ u.torch_points or 0 }}</td>
+      <td>¥{{ "%.2f"|format(u.available_balance or 0) }}</td>
+      <td style="font-size:11px;color:var(--dim)">{{ u.created_at or "-" }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  {% if total_pages > 1 %}
+  <div class="pager">
+    {% if page > 1 %}<a href="?q={{ q }}&page={{ page - 1 }}">上一页</a>{% endif %}
+    <span>{{ page }} / {{ total_pages }}</span>
+    {% if page < total_pages %}<a href="?q={{ q }}&page={{ page + 1 }}">下一页</a>{% endif %}
+  </div>
+  {% endif %}
+</div>
+
+<div class="modal-bg" id="detailModal">
+  <div class="modal">
+    <button class="close" onclick="closeModal()">&times;</button>
+    <h2 id="modalTitle">用户详情</h2>
+    <div id="modalContent"><p style="color:var(--dim)">加载中...</p></div>
+  </div>
+</div>
+
+<script>
+function showDetail(sid) {
+  document.getElementById('detailModal').classList.add('show');
+  document.getElementById('modalContent').innerHTML = '<p style="color:var(--dim)">加载中...</p>';
+  fetch('/admin/users/' + sid).then(r => r.json()).then(resp => {
+    if (!resp.success) { document.getElementById('modalContent').innerHTML = '<p style="color:var(--red)">' + resp.error + '</p>'; return; }
+    const u = resp.data;
+    let html = '<div class="field"><span class="k">名字</span><span class="v">' + (u.name||'-') + '</span></div>';
+    html += '<div class="field"><span class="k">ID</span><span class="v" style="font-size:11px;font-family:monospace">' + u.shibie_id + '</span></div>';
+    html += '<div class="field"><span class="k">邮箱</span><span class="v">' + (u.email||'-') + '</span></div>';
+    html += '<div class="field"><span class="k">课次</span><span class="v">L' + u.current_lesson + '（轮次 ' + u.current_round + '）</span></div>';
+    html += '<div class="field"><span class="k">星星</span><span class="v">⭐ ' + u.stars + '</span></div>';
+    html += '<div class="field"><span class="k">权限</span><span class="v">' + u.access_level + '</span></div>';
+    html += '<div class="field"><span class="k">火炬值</span><span class="v">' + (u.torch_points||0) + '</span></div>';
+    html += '<div class="field"><span class="k">余额</span><span class="v">¥' + (u.available_balance||0).toFixed(2) + '</span></div>';
+    html += '<div class="field"><span class="k">邀请码</span><span class="v">' + (u.invite_code||'-') + '</span></div>';
+    if (u.referral) html += '<div class="field"><span class="k">邀请人</span><span class="v">' + (u.referral.inviter_name||u.referral.inviter_shibie_id) + '</span></div>';
+    html += '<div class="field"><span class="k">已完成课</span><span class="v">[' + (u.completed_lessons||[]).join(', ') + ']</span></div>';
+    html += '<div class="field"><span class="k">注册时间</span><span class="v">' + (u.created_at||'-') + '</span></div>';
+
+    html += '<h3 style="color:var(--cyan);font-size:14px;margin:16px 0 8px">快速操作</h3>';
+    html += '<div class="edit-row"><select id="editField"><option value="access_level">权限</option><option value="stars">星星</option><option value="current_lesson">课次</option><option value="name">名字</option></select>';
+    html += '<input id="editValue" placeholder="新值" style="width:120px">';
+    html += '<button onclick="updateUser(\'' + u.shibie_id + '\')">保存</button></div>';
+
+    if (u.torch_log && u.torch_log.length) {
+      html += '<h3 style="color:var(--cyan);font-size:14px;margin:16px 0 8px">火炬值日志</h3>';
+      html += '<table class="sub-table"><tr><th>值</th><th>原因</th><th>时间</th></tr>';
+      u.torch_log.forEach(t => { html += '<tr><td>+' + t.points + '</td><td>' + t.reason + '</td><td>' + (t.created_at||'-') + '</td></tr>'; });
+      html += '</table>';
+    }
+
+    if (u.earnings && u.earnings.length) {
+      html += '<h3 style="color:var(--gold);font-size:14px;margin:16px 0 8px">收益明细</h3>';
+      html += '<table class="sub-table"><tr><th>来源</th><th>金额</th><th>时间</th></tr>';
+      u.earnings.forEach(e => { html += '<tr><td>' + (e.source_name||'-') + '</td><td>¥' + e.amount + '</td><td>' + (e.created_at||'-') + '</td></tr>'; });
+      html += '</table>';
+    }
+
+    document.getElementById('modalContent').innerHTML = html;
+  });
+}
+
+function updateUser(sid) {
+  const field = document.getElementById('editField').value;
+  const value = document.getElementById('editValue').value;
+  if (!value) return;
+  fetch('/admin/users/' + sid + '/update', {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({field, value})
+  }).then(r => r.json()).then(resp => {
+    if (resp.success) { alert('修改成功'); location.reload(); }
+    else alert('修改失败: ' + resp.error);
+  });
+}
+
+function closeModal() {
+  document.getElementById('detailModal').classList.remove('show');
+}
+document.getElementById('detailModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+</script>
+</body>
+</html>

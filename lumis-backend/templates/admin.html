@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lumis 管理后台 — 概览</title>
+<style>
+:root{--bg-dark:#0B0E2D;--bg-card:rgba(30,34,88,0.6);--border:#2A2F6E;
+  --text:#fff;--dim:#A0A4D0;--gold:#FFD166;--cyan:#00E5FF;--orange:#FF6B35;
+  --red:#FF6B6B;--green:#4ADE80}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:var(--bg-dark);color:var(--text);min-height:100vh;display:flex}
+.sidebar{width:200px;min-height:100vh;background:rgba(20,24,68,0.9);
+  border-right:1px solid var(--border);padding:24px 0;flex-shrink:0}
+.sidebar h2{font-size:16px;color:var(--gold);padding:0 20px 20px;letter-spacing:1px}
+.sidebar a{display:block;padding:12px 20px;color:var(--dim);text-decoration:none;
+  font-size:14px;transition:all .2s;border-left:3px solid transparent}
+.sidebar a:hover{color:#fff;background:rgba(0,229,255,0.05)}
+.sidebar a.active{color:var(--cyan);background:rgba(0,229,255,0.08);border-left-color:var(--cyan)}
+.sidebar a.logout{color:var(--red);margin-top:24px}
+.main{flex:1;padding:32px;max-width:1000px}
+.main h1{font-size:22px;color:var(--gold);margin-bottom:24px;letter-spacing:1px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.stat{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;
+  padding:20px;text-align:center}
+.stat .num{font-size:28px;font-weight:bold;margin-bottom:4px}
+.stat .label{font-size:12px;color:var(--dim)}
+.stat:nth-child(1) .num{color:var(--cyan)}
+.stat:nth-child(2) .num{color:var(--gold)}
+.stat:nth-child(3) .num{color:var(--green)}
+.stat:nth-child(4) .num{color:var(--orange)}
+.section{margin-bottom:24px}
+.section h2{font-size:16px;color:var(--cyan);margin-bottom:12px}
+table{width:100%;border-collapse:collapse;background:var(--bg-card);
+  border:1px solid var(--border);border-radius:8px;overflow:hidden}
+th{text-align:left;padding:10px 12px;font-size:12px;color:var(--dim);
+  border-bottom:1px solid var(--border);font-weight:normal}
+td{padding:10px 12px;font-size:13px;border-bottom:1px solid rgba(42,47,110,0.3)}
+tr:hover td{background:rgba(0,229,255,0.03)}
+.badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:bold}
+.badge-paid{background:rgba(74,222,128,0.15);color:var(--green)}
+.badge-pending{background:rgba(255,209,102,0.15);color:var(--gold)}
+.empty{color:var(--dim);font-size:13px;padding:20px;text-align:center}
+@media(max-width:768px){
+  .sidebar{display:none}
+  .main{padding:16px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <h2>Lumis 管理</h2>
+  <a href="/admin" class="active">概览</a>
+  <a href="/admin/users">用户管理</a>
+  <a href="/admin/payments">支付记录</a>
+  <a href="/admin/withdrawals">提现审批</a>
+  <a href="/admin/logout" class="logout">退出登录</a>
+</nav>
+<div class="main">
+  <h1>概览仪表板</h1>
+  <div class="stats">
+    <div class="stat"><div class="num">{{ stats.total_users }}</div><div class="label">总用户</div></div>
+    <div class="stat"><div class="num">{{ stats.paid_users }}</div><div class="label">付费用户</div></div>
+    <div class="stat"><div class="num">¥{{ "%.2f"|format(stats.total_revenue) }}</div><div class="label">总收入</div></div>
+    <div class="stat"><div class="num">{{ stats.pending_withdrawals }}</div><div class="label">待审提现</div></div>
+  </div>
+
+  <div class="section">
+    <h2>最近支付</h2>
+    {% if recent_payments %}
+    <table>
+      <tr><th>用户</th><th>订单号</th><th>金额</th><th>状态</th><th>时间</th></tr>
+      {% for p in recent_payments %}
+      <tr>
+        <td>{{ p.name or p.shibie_id[:8] }}</td>
+        <td style="font-size:11px;font-family:monospace">{{ p.out_trade_no[:12] }}...</td>
+        <td>¥{{ p.amount }}</td>
+        <td><span class="badge badge-{{ p.status }}">{{ p.status }}</span></td>
+        <td style="font-size:11px;color:var(--dim)">{{ p.created_at or "-" }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}<p class="empty">暂无支付记录</p>{% endif %}
+  </div>
+
+  <div class="section">
+    <h2>最近动态</h2>
+    {% if recent_logs %}
+    <table>
+      <tr><th>用户</th><th>操作</th><th>详情</th><th>时间</th></tr>
+      {% for log in recent_logs %}
+      <tr>
+        <td>{{ log.shibie_id[:8] }}</td>
+        <td>{{ log.action }}</td>
+        <td style="font-size:11px;color:var(--dim);max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ log.payload }}</td>
+        <td style="font-size:11px;color:var(--dim)">{{ log.created_at or "-" }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}<p class="empty">暂无动态</p>{% endif %}
+  </div>
+</div>
+</body>
+</html>

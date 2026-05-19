@@ -12,7 +12,7 @@ from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.database import init_db
-from app.routers import users, auth, devices, payment, dashboard
+from app.routers import users, auth, devices, payment, dashboard, admin
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 
@@ -153,6 +153,7 @@ app.include_router(auth.router, prefix="/api")
 app.include_router(devices.router, prefix="/api")
 app.include_router(payment.router, prefix="/api")
 app.include_router(dashboard.router)
+app.include_router(admin.router)
 
 
 @app.get("/", response_class=HTMLResponse)

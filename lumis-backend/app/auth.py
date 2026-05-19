@@ -73,6 +73,28 @@ def get_current_account(account_id: int = Depends(get_current_account_id), db=De
     return dict(row._mapping)
 
 
+ADMIN_PASSWORD = os.environ.get("LUMIS_ADMIN_PASSWORD", "lumis-admin-2025")
+
+
+def create_admin_token() -> str:
+    expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    return jwt.encode({"sub": "admin", "exp": expire, "type": "admin"}, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def get_current_admin(request: Request):
+    """Admin cookie 鉴权，未登录 302 跳转"""
+    token = request.cookies.get("admin_token")
+    if not token:
+        return RedirectResponse(url="/admin/login", status_code=302)
+
+    payload = decode_token(token)
+    if not payload or payload.get("type") != "admin":
+        resp = RedirectResponse(url="/admin/login", status_code=302)
+        resp.delete_cookie("admin_token")
+        return resp
+    return True
+
+
 def get_current_account_from_cookie(request: Request, db=Depends(get_db)) -> dict:
     """Cookie/URL token 鉴权，用于 Dashboard 页面"""
     token = request.cookies.get("access_token") or request.query_params.get("token")
