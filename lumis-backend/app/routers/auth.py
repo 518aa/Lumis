@@ -21,6 +21,7 @@ class RegisterBody(BaseModel):
     password: str
     username: str = ""
     shibie_id: str = ""
+    invite_code: str = ""
 
 
 class LoginBody(BaseModel):
@@ -61,12 +62,50 @@ def register(body: RegisterBody, db=Depends(get_db)):
         row = db.execute(text("SELECT lastval()")).fetchone()
         account_id = row[0]
 
-    # 创建关联的 user（学习数据）
+    # 创建关联的 user（学习数据），shibie_id 冲突时自动生成新的
     shibie_id = body.shibie_id or str(uuid.uuid4())
+    existing_user = db.execute(
+        text("SELECT shibie_id FROM users WHERE shibie_id = :sid"), {"sid": shibie_id}
+    ).fetchone()
+    if existing_user:
+        shibie_id = str(uuid.uuid4())
+
+    access_level = "free"
+    inviter_sid = None
+    ic = body.invite_code.strip().upper() if body.invite_code else ""
+
+    if ic:
+        from app.routers.payment import CODE_CHARS
+        if all(c in CODE_CHARS for c in ic) and len(ic) == 4:
+            code_row = db.execute(
+                text("SELECT * FROM invite_codes WHERE code = :c"), {"c": ic}
+            ).fetchone()
+            if not code_row:
+                raise HTTPException(status_code=400, detail="邀请码不存在，请联系官方获取")
+            if code_row._mapping["owner_shibie_id"] == shibie_id:
+                raise HTTPException(status_code=400, detail="不能使用自己的邀请码")
+            access_level = "invited"
+            inviter_sid = code_row._mapping["owner_shibie_id"]
+            db.execute(
+                text("UPDATE invite_codes SET used_count = used_count + 1 WHERE code = :c"),
+                {"c": ic},
+            )
+        else:
+            raise HTTPException(status_code=400, detail="邀请码格式不正确，请联系官方获取")
+
     db.execute(
-        text("INSERT INTO users (shibie_id, name, created_at, updated_at) VALUES (:sid, :name, :now, :now)"),
-        {"sid": shibie_id, "name": username, "now": _now()},
+        text("INSERT INTO users (shibie_id, name, access_level, invite_code, created_at, updated_at) VALUES (:sid, :name, :level, '', :now, :now)"),
+        {"sid": shibie_id, "name": username, "level": access_level, "now": _now()},
     )
+
+    if inviter_sid:
+        from app.database import referrals
+        db.execute(
+            referrals.insert().values(
+                invite_code=ic, inviter_shibie_id=inviter_sid,
+                invitee_shibie_id=shibie_id, created_at=_now(),
+            )
+        )
 
     # 绑定设备
     db.execute(

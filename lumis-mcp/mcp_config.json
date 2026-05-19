@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "lumis": {
+      "type": "stdio",
+      "command": "/Library/Frameworks/Python.framework/Versions/3.10/Resources/Python.app/Contents/MacOS/Python",
+      "args": ["/Users/mac/AI助理/xiaoziijiqiren/Lumis/lumis-mcp/lumis_server.py", "stdio"]
+    }
+  }
+}

@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.Lumis" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">#FF6B35</item>
-        <item name="colorPrimaryVariant">#E55A2B</item>
-        <item name="colorOnPrimary">#FFFFFF</item>
-        <item name="colorSecondary">#FFD166</item>
-        <item name="colorOnSecondary">#333333</item>
-        <item name="android:statusBarColor">#FF6B35</item>
+        <item name="colorPrimary">@color/accent_orange</item>
+        <item name="colorPrimaryVariant">@color/accent_orange_dark</item>
+        <item name="colorOnPrimary">@color/text_primary</item>
+        <item name="colorSecondary">@color/accent_gold</item>
+        <item name="colorOnSecondary">@color/bg_space_start</item>
+        <item name="android:statusBarColor">@color/bg_space_start</item>
+        <item name="android:navigationBarColor">@color/bg_space_start</item>
+        <item name="android:windowBackground">@drawable/bg_space_gradient</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:textColorHint">@color/text_hint</item>
     </style>
 </resources>

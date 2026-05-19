@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.preference.PreferenceManager
 import com.lumis.android.databinding.ActivityLoginBinding
 
@@ -25,9 +26,7 @@ class LoginActivity : AppCompatActivity() {
 
         val backendUrl = prefs.getString("backend_url", "https://lumis.tpr.wales")!!
         api = LumisApi(backendUrl)
-        binding.tvBackendUrl.text = "后端: $backendUrl"
 
-        // 已登录则直接跳转
         val existingToken = prefs.getString("access_token", null)
         if (existingToken != null) {
             navigateToMain()
@@ -43,6 +42,7 @@ class LoginActivity : AppCompatActivity() {
             val email = binding.etEmail.text.toString().trim()
             val password = binding.etPassword.text.toString().trim()
             val username = binding.etUsername.text.toString().trim()
+            val inviteCode = binding.etInviteCode.text.toString().trim().uppercase()
 
             if (email.isBlank() || password.isBlank()) {
                 Toast.makeText(this, "请填写邮箱和密码", Toast.LENGTH_SHORT).show()
@@ -58,7 +58,7 @@ class LoginActivity : AppCompatActivity() {
             val shibieId = prefs.getString("shibie_id", "") ?: ""
 
             if (isRegisterMode) {
-                api.register(email, password, username, shibieId) { result ->
+                api.register(email, password, username, shibieId, inviteCode) { result ->
                     runOnUiThread {
                         setLoading(false)
                         result.onSuccess { data ->
@@ -75,7 +75,6 @@ class LoginActivity : AppCompatActivity() {
                         setLoading(false)
                         result.onSuccess { data ->
                             saveAuth(data)
-                            // 如果登录的账号没有绑定当前设备，自动绑定
                             if (data.shibie_id != shibieId && shibieId.isNotBlank()) {
                                 api.bindDevice(data.access_token, shibieId, "LumisDevice") { _ -> }
                             }
@@ -89,6 +88,27 @@ class LoginActivity : AppCompatActivity() {
         }
 
         updateMode()
+        startEntryAnimations()
+    }
+
+    private fun startEntryAnimations() {
+        val views = listOf(
+            binding.tvLogo, binding.tvSubtitle,
+            binding.etEmail, binding.etPassword,
+            binding.btnLogin, binding.tvSwitch
+        )
+
+        views.forEachIndexed { index, view ->
+            view.alpha = 0f
+            view.translationY = 30f
+            view.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setDuration(500)
+                .setStartDelay((index * 100 + 100).toLong())
+                .setInterpolator(FastOutSlowInInterpolator())
+                .start()
+        }
     }
 
     private fun updateMode() {
@@ -96,10 +116,12 @@ class LoginActivity : AppCompatActivity() {
             binding.btnLogin.text = "注册"
             binding.tvSwitch.text = "已有账号？点击登录"
             binding.etUsername.visibility = View.VISIBLE
+            binding.etInviteCode.visibility = View.VISIBLE
         } else {
             binding.btnLogin.text = "登录"
             binding.tvSwitch.text = "没有账号？点击注册"
             binding.etUsername.visibility = View.GONE
+            binding.etInviteCode.visibility = View.GONE
         }
     }
 

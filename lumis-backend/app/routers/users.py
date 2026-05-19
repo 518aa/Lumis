@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from sqlalchemy import text
 
-from app.database import get_db, _now
+from app.database import get_db, _now, torch_points_log
 
 router = APIRouter()
 
@@ -145,7 +145,7 @@ def complete_lesson(body: CompleteLessonBody, db=Depends(get_db)):
 
     db.execute(
         text("""UPDATE users
-           SET completed_lessons = :completed, current_lesson = :next_lesson, updated_at = :now
+           SET completed_lessons = :completed, current_lesson = :next_lesson, current_round = 0, updated_at = :now
            WHERE shibie_id = :sid"""),
         {"completed": json.dumps(completed), "next_lesson": next_lesson, "now": _now(), "sid": body.shibie_id},
     )
@@ -160,6 +160,28 @@ def complete_lesson(body: CompleteLessonBody, db=Depends(get_db)):
     )
 
     _write_sync_log(db, body.shibie_id, "complete_lesson", {"lesson_number": body.lesson_number})
+
+    # ── 被邀请人首节课完成：邀请人火炬值 +5 ──
+    if body.lesson_number == 1:
+        ref = db.execute(
+            text("SELECT inviter_shibie_id FROM referrals WHERE invitee_shibie_id = :sid"),
+            {"sid": body.shibie_id},
+        ).fetchone()
+        if ref:
+            inviter_sid = ref._mapping["inviter_shibie_id"]
+            db.execute(
+                text("UPDATE users SET torch_points = torch_points + 5, updated_at = :now WHERE shibie_id = :sid"),
+                {"now": now, "sid": inviter_sid},
+            )
+            db.execute(
+                torch_points_log.insert().values(
+                    shibie_id=inviter_sid, points=5,
+                    reason="被邀请人完成首节课",
+                    source_type="lesson", source_id=body.shibie_id,
+                    created_at=now,
+                )
+            )
+
     db.commit()
     return _ok({"completed_lessons": completed, "current_lesson": next_lesson})
 
@@ -191,9 +213,32 @@ def get_user_state(shibie_id: str, db=Depends(get_db)):
     return _ok(_row_to_dict(row))
 
 
+class SetRoundBody(BaseModel):
+    shibie_id: str
+    round_number: int
+
+
 class SetLessonBody(BaseModel):
     shibie_id: str
     lesson_number: int
+
+
+@router.post("/internal/set-round")
+def set_round(body: SetRoundBody, db=Depends(get_db)):
+    if not 0 <= body.round_number <= 3:
+        return _err("轮次超出范围 0-3")
+    row = db.execute(
+        text("SELECT * FROM users WHERE shibie_id = :sid"), {"sid": body.shibie_id}
+    ).fetchone()
+    if not row:
+        return _err("用户不存在")
+    db.execute(
+        text("UPDATE users SET current_round = :round, updated_at = :now WHERE shibie_id = :sid"),
+        {"round": body.round_number, "now": _now(), "sid": body.shibie_id},
+    )
+    _write_sync_log(db, body.shibie_id, "set_round", {"round_number": body.round_number})
+    db.commit()
+    return _ok({"current_round": body.round_number})
 
 
 @router.post("/internal/set-lesson")

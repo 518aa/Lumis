@@ -1,87 +1,168 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFF8F0">
+    android:background="@drawable/bg_space_gradient">
 
-    <!-- 顶部栏 -->
-    <TextView
-        android:id="@+id/tvTitle"
+    <com.lumis.android.ui.StarFieldView
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:background="#FF6B35"
-        android:gravity="center"
-        android:text="Lumis 英语老师"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="match_parent"
+        android:tag="starField" />
 
-    <!-- 设置按钮 -->
-    <ImageView
-        android:id="@+id/btnSettings"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="12dp"
-        android:padding="8dp"
-        android:src="@android:drawable/ic_menu_preferences"
-        android:contentDescription="设置"
-        app:layout_constraintTop_toTopOf="@id/tvTitle"
-        app:layout_constraintBottom_toBottomOf="@id/tvTitle"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- 状态文字 -->
-    <TextView
-        android:id="@+id/tvStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
-        android:text="点击开始上课"
-        android:textColor="#333333"
-        android:textSize="18sp"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- 大按钮 -->
-    <ImageButton
-        android:id="@+id/btnTalk"
-        android:layout_width="180dp"
-        android:layout_height="180dp"
-        android:layout_marginTop="32dp"
-        android:background="@drawable/btn_circle_bg"
-        android:src="@android:drawable/ic_btn_speak_now"
-        android:scaleType="fitCenter"
-        android:padding="36dp"
-        android:contentDescription="开始对话"
-        app:layout_constraintTop_toBottomOf="@id/tvStatus"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- 对话记录 -->
-    <ScrollView
-        android:id="@+id/scrollChat"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginBottom="16dp"
-        android:background="@android:color/white"
-        android:elevation="2dp"
-        app:layout_constraintTop_toBottomOf="@id/btnTalk"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent">
 
+        <!-- 标题栏 -->
         <TextView
-            android:id="@+id/tvChat"
+            android:id="@+id/tvTitle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="12dp"
-            android:textSize="15sp"
-            android:textColor="#333333"
-            android:lineSpacingExtra="4dp" />
-    </ScrollView>
+            android:layout_height="@dimen/title_bar_height"
+            android:background="@drawable/bg_title_bar_space"
+            android:gravity="center"
+            android:text="Lumis 英语老师"
+            android:textColor="@color/accent_gold"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:elevation="4dp"
+            app:layout_constraintTop_toTopOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- 关于按钮 -->
+        <ImageView
+            android:id="@+id/btnAbout"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginEnd="@dimen/spacing_md"
+            android:src="@drawable/ic_help_space"
+            android:background="@drawable/bg_icon_circle"
+            android:padding="3dp"
+            android:contentDescription="关于"
+            android:elevation="5dp"
+            app:layout_constraintTop_toTopOf="@id/tvTitle"
+            app:layout_constraintBottom_toBottomOf="@id/tvTitle"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- 状态文字 -->
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="36dp"
+            android:text="点击开始上课"
+            android:textColor="@color/text_secondary"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- 连接跳动圆点 -->
+        <LinearLayout
+            android:id="@+id/dotsContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/tvStatus"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <View
+                android:id="@+id/dot1"
+                android:layout_width="@dimen/dot_size"
+                android:layout_height="@dimen/dot_size"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/shape_dot_star" />
+
+            <View
+                android:id="@+id/dot2"
+                android:layout_width="@dimen/dot_size"
+                android:layout_height="@dimen/dot_size"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/shape_dot_star" />
+
+            <View
+                android:id="@+id/dot3"
+                android:layout_width="@dimen/dot_size"
+                android:layout_height="@dimen/dot_size"
+                android:background="@drawable/shape_dot_star" />
+        </LinearLayout>
+
+        <!-- 麦克风区域容器 -->
+        <FrameLayout
+            android:id="@+id/micContainer"
+            android:layout_width="@dimen/mic_container_size"
+            android:layout_height="@dimen/mic_container_size"
+            android:layout_marginTop="@dimen/spacing_lg"
+            app:layout_constraintTop_toBottomOf="@id/dotsContainer"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- 光晕层 -->
+            <View
+                android:id="@+id/micGlow"
+                android:layout_width="@dimen/mic_container_size"
+                android:layout_height="@dimen/mic_container_size"
+                android:layout_gravity="center"
+                android:background="@drawable/btn_mic_glow"
+                android:alpha="0.3" />
+
+            <!-- 波纹环1 -->
+            <View
+                android:id="@+id/ripple1"
+                android:layout_width="@dimen/mic_button_size"
+                android:layout_height="@dimen/mic_button_size"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_mic_ripple_ring"
+                android:alpha="0" />
+
+            <!-- 波纹环2 -->
+            <View
+                android:id="@+id/ripple2"
+                android:layout_width="@dimen/mic_button_size"
+                android:layout_height="@dimen/mic_button_size"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_mic_ripple_ring"
+                android:alpha="0" />
+
+            <!-- 麦克风按钮 -->
+            <ImageButton
+                android:id="@+id/btnTalk"
+                android:layout_width="@dimen/mic_button_size"
+                android:layout_height="@dimen/mic_button_size"
+                android:layout_gravity="center"
+                android:background="@drawable/btn_mic_bg"
+                android:src="@drawable/ic_mic_space"
+                android:scaleType="fitCenter"
+                android:padding="40dp"
+                android:contentDescription="开始对话" />
+        </FrameLayout>
+
+        <!-- 对话记录 -->
+        <ScrollView
+            android:id="@+id/scrollChat"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/spacing_md"
+            android:layout_marginEnd="@dimen/spacing_md"
+            android:layout_marginTop="@dimen/spacing_lg"
+            android:layout_marginBottom="@dimen/spacing_md"
+            android:background="@drawable/bg_chat_area"
+            android:elevation="2dp"
+            app:layout_constraintTop_toBottomOf="@id/micContainer"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <TextView
+                android:id="@+id/tvChat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/spacing_md"
+                android:textSize="15sp"
+                android:textColor="@color/text_chat"
+                android:lineSpacingExtra="6dp" />
+        </ScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

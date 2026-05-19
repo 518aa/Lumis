@@ -28,8 +28,8 @@
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".SettingsActivity"
-            android:label="设置"
+            android:name=".AboutActivity"
+            android:label="关于 Lumis"
             android:parentActivityName=".MainActivity" />
     </application>
 </manifest>

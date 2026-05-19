@@ -35,12 +35,16 @@ class WebSocketManager(
     var onConnectionState: OnConnectionState? = null
 
     // 动态用户信息（由 MainActivity 设置）
-    private var userInfoText: String = "我叫丽丽，10颗星，第9课。"
+    private var userInfoText: String = ""
+    private var userInfoReady = false
 
     fun setUserInfo(name: String, stars: Int, lesson: Int, shibieId: String) {
         val shortId = shibieId.take(8)
         userInfoText = "$shortId ${name} ${stars}星 L${lesson}"
+        userInfoReady = true
         Log.i(tag, "用户信息已更新: $userInfoText (full: $shibieId)")
+        // 不再主动发 detect，只在 handleServerHello 时注入一次
+        // 避免轮询 stars 变化触发重复注入 → AI 重复调 start_session
     }
 
     private val listener = object : WebSocketListener() {
@@ -152,10 +156,7 @@ class WebSocketManager(
         Log.i(tag, "ServerHello 收到，连接就绪")
         updateConnectionState(true)
 
-        // 先发用户状态，再开始监听
         sendUserState()
-
-        // 开始监听
         sendListenStart()
     }
 
@@ -164,6 +165,10 @@ class WebSocketManager(
      * py-xiaozhi 实测：detect 接受短文本并传递给 LLM。
      */
     private fun sendUserState() {
+        if (!userInfoReady || userInfoText.isBlank()) {
+            Log.w(tag, "用户信息未就绪，跳过 detect 注入")
+            return
+        }
         val detectMsg = Protocol.ListenDetect(
             session_id = sessionId,
             text = userInfoText
