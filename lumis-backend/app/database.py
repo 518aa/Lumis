@@ -2,6 +2,7 @@
 
 import json
 import os
+import sys
 
 from sqlalchemy import create_engine, text, MetaData, Table, Column, Integer, String, Text, Float, UniqueConstraint
 from sqlalchemy.orm import Session
@@ -11,6 +12,8 @@ from sqlalchemy.pool import StaticPool
 
 DATABASE_URL = os.getenv("DATABASE_URL", "")
 IS_POSTGRES = DATABASE_URL.startswith("postgres://") or DATABASE_URL.startswith("postgresql://")
+
+print(f"[Lumis DB] IS_POSTGRES={IS_POSTGRES}, URL={'***' + DATABASE_URL[-30:] if DATABASE_URL else 'not set'}")
 
 if IS_POSTGRES:
     if DATABASE_URL.startswith("postgres://"):

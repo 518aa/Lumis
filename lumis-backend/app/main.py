@@ -1,10 +1,21 @@
 """FastAPI 入口"""
 
+import os
+import sys
+import traceback
+
+# 调试：打印关键环境信息
+print(f"[Lumis] Python: {sys.version}")
+print(f"[Lumis] DATABASE_URL set: {bool(os.getenv('DATABASE_URL'))}")
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv(Path(__file__).resolve().parent.parent / ".env.alipay")
+except Exception:
+    pass
+
 from contextlib import asynccontextmanager
 from pathlib import Path
-
-from dotenv import load_dotenv
-load_dotenv(Path(__file__).resolve().parent.parent / ".env.alipay")
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
