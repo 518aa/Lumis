@@ -15,7 +15,11 @@ IS_POSTGRES = DATABASE_URL.startswith("postgres://") or DATABASE_URL.startswith(
 if IS_POSTGRES:
     if DATABASE_URL.startswith("postgres://"):
         DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
-    engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+    if "sslmode" not in DATABASE_URL and "?" not in DATABASE_URL:
+        DATABASE_URL += "?sslmode=require"
+    elif "sslmode" not in DATABASE_URL:
+        DATABASE_URL += "&sslmode=require"
+    engine = create_engine(DATABASE_URL, pool_pre_ping=True, pool_size=5, max_overflow=10)
 else:
     from pathlib import Path
     _db_path = Path(__file__).resolve().parent.parent / "lumis.db"

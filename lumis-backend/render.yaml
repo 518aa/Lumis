@@ -9,4 +9,14 @@ services:
         sync: false
       - key: LUMIS_SECRET_KEY
         generateValue: true
+      - key: LUMIS_ADMIN_PASSWORD
+        sync: false
+      - key: LUMIS_API_KEY
+        sync: false
+      - key: ALIPAY_APP_ID
+        sync: false
+      - key: ALIPAY_PRIVATE_KEY
+        sync: false
+      - key: ALIPAY_PUBLIC_KEY
+        sync: false
     plan: free
