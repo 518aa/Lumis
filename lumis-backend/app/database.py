@@ -5,6 +5,7 @@ import os
 
 from sqlalchemy import create_engine, text, MetaData, Table, Column, Integer, String, Text, Float, UniqueConstraint
 from sqlalchemy.orm import Session
+from sqlalchemy.pool import StaticPool
 
 # ── 环境判断 ──────────────────────────────────────────────
 
@@ -18,7 +19,11 @@ if IS_POSTGRES:
 else:
     from pathlib import Path
     _db_path = Path(__file__).resolve().parent.parent / "lumis.db"
-    engine = create_engine(f"sqlite:///{_db_path}", connect_args={"check_same_thread": False})
+    engine = create_engine(
+        f"sqlite:///{_db_path}",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
 
 metadata = MetaData()
 

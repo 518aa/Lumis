@@ -13,12 +13,22 @@ from sqlalchemy import text
 
 from app.database import get_db
 
-SECRET_KEY = os.environ.get("LUMIS_SECRET_KEY", "lumis-dev-secret-key-change-in-production")
+SECRET_KEY = os.environ.get("LUMIS_SECRET_KEY", "lumis-dev-DO-NOT-USE-IN-PROD-2024-xK9mP2vN8qR4wT6")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 hours
 REFRESH_TOKEN_EXPIRE_DAYS = 30
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+def verify_api_key(x_api_key: str = Header(None, alias="X-API-Key")) -> bool:
+    """内部 API 鉴权：X-API-Key header 或 MCP 内部调用"""
+    internal_key = os.environ.get("LUMIS_API_KEY", "")
+    if not internal_key:
+        return True  # 未配置 key 时不强制鉴权
+    if x_api_key == internal_key:
+        return True
+    raise HTTPException(status_code=403, detail="Invalid API key")
 
 
 def hash_password(password: str) -> str:

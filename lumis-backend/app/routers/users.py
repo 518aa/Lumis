@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from sqlalchemy import text
 
 from app.database import get_db, _now, torch_points_log
+from app.auth import verify_api_key
 
 router = APIRouter()
 
@@ -112,7 +113,7 @@ def ensure_user(body: EnsureUserBody, db=Depends(get_db)):
 # ── 内部 API（MCP 调用）───────────────────────────────────
 
 @router.post("/internal/add-stars")
-def add_stars(body: AddStarsBody, db=Depends(get_db)):
+def add_stars(body: AddStarsBody, db=Depends(get_db), _auth=Depends(verify_api_key)):
     row = db.execute(
         text("SELECT * FROM users WHERE shibie_id = :sid"), {"sid": body.shibie_id}
     ).fetchone()
@@ -130,7 +131,7 @@ def add_stars(body: AddStarsBody, db=Depends(get_db)):
 
 
 @router.post("/internal/complete-lesson")
-def complete_lesson(body: CompleteLessonBody, db=Depends(get_db)):
+def complete_lesson(body: CompleteLessonBody, db=Depends(get_db), _auth=Depends(verify_api_key)):
     row = db.execute(
         text("SELECT * FROM users WHERE shibie_id = :sid"), {"sid": body.shibie_id}
     ).fetchone()
@@ -187,7 +188,7 @@ def complete_lesson(body: CompleteLessonBody, db=Depends(get_db)):
 
 
 @router.post("/internal/switch-mode")
-def switch_mode(body: SwitchModeBody, db=Depends(get_db)):
+def switch_mode(body: SwitchModeBody, db=Depends(get_db), _auth=Depends(verify_api_key)):
     row = db.execute(
         text("SELECT * FROM users WHERE shibie_id = :sid"), {"sid": body.shibie_id}
     ).fetchone()
@@ -204,7 +205,7 @@ def switch_mode(body: SwitchModeBody, db=Depends(get_db)):
 
 
 @router.get("/internal/user-state/{shibie_id}")
-def get_user_state(shibie_id: str, db=Depends(get_db)):
+def get_user_state(shibie_id: str, db=Depends(get_db), _auth=Depends(verify_api_key)):
     row = db.execute(
         text("SELECT * FROM users WHERE shibie_id = :sid"), {"sid": shibie_id}
     ).fetchone()
@@ -224,7 +225,7 @@ class SetLessonBody(BaseModel):
 
 
 @router.post("/internal/set-round")
-def set_round(body: SetRoundBody, db=Depends(get_db)):
+def set_round(body: SetRoundBody, db=Depends(get_db), _auth=Depends(verify_api_key)):
     if not 0 <= body.round_number <= 3:
         return _err("轮次超出范围 0-3")
     row = db.execute(
@@ -242,7 +243,7 @@ def set_round(body: SetRoundBody, db=Depends(get_db)):
 
 
 @router.post("/internal/set-lesson")
-def set_lesson(body: SetLessonBody, db=Depends(get_db)):
+def set_lesson(body: SetLessonBody, db=Depends(get_db), _auth=Depends(verify_api_key)):
     if not 1 <= body.lesson_number <= 120:
         return _err("课次超出范围 1-120")
     row = db.execute(
@@ -265,7 +266,7 @@ class UpdateNameBody(BaseModel):
 
 
 @router.post("/internal/update-name")
-def update_name(body: UpdateNameBody, db=Depends(get_db)):
+def update_name(body: UpdateNameBody, db=Depends(get_db), _auth=Depends(verify_api_key)):
     if not body.name.strip():
         return _err("名字不能为空")
     row = db.execute(

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+
+    <!-- 身体 -->
+    <path
+        android:fillColor="#7C5CBF"
+        android:pathData="M30,25 Q30,10 60,10 Q90,10 90,25 L92,85 Q92,105 60,105 Q28,105 28,85 Z" />
+
+    <!-- 屏幕/脸 -->
+    <path
+        android:fillColor="#EDE4F7"
+        android:pathData="M36,30 Q36,20 60,20 Q84,20 84,30 L85,78 Q85,92 60,92 Q35,92 35,78 Z" />
+
+    <!-- 左眼 (星星眼) -->
+    <path
+        android:fillColor="#F7C948"
+        android:pathData="M52,48 L50,42 L46,46 L42,44 L44,48 L40,50 L44,52 L42,56 L46,54 L50,58 L50,52 L54,50 Z" />
+
+    <!-- 右眼 (星星眼) -->
+    <path
+        android:fillColor="#F7C948"
+        android:pathData="M68,48 L66,42 L62,46 L58,44 L60,48 L56,50 L60,52 L58,56 L62,54 L66,58 L66,52 L70,50 Z" />
+
+    <!-- 大微笑 -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#2C2440"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M42,64 Q60,80 78,64" />
+
+    <!-- 腮红左 (更明显) -->
+    <path
+        android:fillColor="#66FF7B6E"
+        android:pathData="M36,58 Q36,52 44,52 Q52,52 52,58 Q52,66 44,66 Q36,66 36,58 Z" />
+
+    <!-- 腮红右 (更明显) -->
+    <path
+        android:fillColor="#66FF7B6E"
+        android:pathData="M68,58 Q68,52 76,52 Q84,52 84,58 Q84,66 76,66 Q68,66 68,58 Z" />
+
+    <!-- 天线 -->
+    <path
+        android:fillColor="#7C5CBF"
+        android:pathData="M57,10 L57,2 Q57,0 60,0 Q63,0 63,2 L63,10" />
+    <path
+        android:fillColor="#F7C948"
+        android:pathData="M56,3 Q56,0 60,0 Q64,0 64,3 Q64,6 60,6 Q56,6 56,3 Z" />
+</vector>

@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="mic_button_size">180dp</dimen>
-    <dimen name="mic_container_size">240dp</dimen>
+    <dimen name="mic_button_size">160dp</dimen>
+    <dimen name="mic_container_size">220dp</dimen>
     <dimen name="button_height">50dp</dimen>
     <dimen name="corner_radius">16dp</dimen>
     <dimen name="corner_radius_sm">8dp</dimen>
     <dimen name="corner_radius_button">25dp</dimen>
+
+    <!-- 新设计系统圆角 token -->
+    <dimen name="corner_sm">12dp</dimen>
+    <dimen name="corner_md">20dp</dimen>
+    <dimen name="corner_lg">28dp</dimen>
+    <dimen name="corner_xl">40dp</dimen>
 
     <dimen name="spacing_xs">4dp</dimen>
     <dimen name="spacing_sm">8dp</dimen>
@@ -16,4 +22,12 @@
     <dimen name="title_bar_height">56dp</dimen>
     <dimen name="icon_size">24dp</dimen>
     <dimen name="dot_size">8dp</dimen>
+
+    <!-- 新组件尺寸 -->
+    <dimen name="lumis_face_size">120dp</dimen>
+    <dimen name="toggle_height">40dp</dimen>
+    <dimen name="chat_bubble_max_width">260dp</dimen>
+    <dimen name="bottom_bar_height">64dp</dimen>
+    <dimen name="status_pill_height">32dp</dimen>
+    <dimen name="progress_pill_height">28dp</dimen>
 </resources>

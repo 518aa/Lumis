@@ -16,6 +16,7 @@ from app.database import (
     get_db, _now, users, payments, invite_codes, referrals,
     earnings, torch_points_log, IS_POSTGRES,
 )
+from app.auth import verify_api_key
 
 router = APIRouter()
 
@@ -298,52 +299,58 @@ async def payment_callback(request: Request, db: Session = Depends(get_db)):
         row = db.execute(
             text("SELECT * FROM payments WHERE out_trade_no = :no"), {"no": out_trade_no}
         ).fetchone()
-        if row and row._mapping["status"] != "paid":
-            sid = row._mapping["shibie_id"]
-            db.execute(
-                text("UPDATE payments SET status = 'paid', paid_at = :now WHERE out_trade_no = :no"),
-                {"now": _now(), "no": out_trade_no},
-            )
-            db.execute(
-                text("UPDATE users SET access_level = 'paid', paid_at = :now, updated_at = :now WHERE shibie_id = :sid"),
-                {"now": _now(), "sid": sid},
-            )
-
-            # ── 收益分成：查找邀请人，给推广者分成 ──
-            ref = db.execute(
-                text("SELECT inviter_shibie_id, invite_code FROM referrals WHERE invitee_shibie_id = :sid"),
-                {"sid": sid},
-            ).fetchone()
-            if ref:
-                inviter_sid = ref._mapping["inviter_shibie_id"]
-                now = _now()
+        if row:
+            if row._mapping["status"] == "paid":
+                return "success"  # 幂等：已处理过直接返回
+            try:
+                sid = row._mapping["shibie_id"]
                 db.execute(
-                    earnings.insert().values(
-                        earner_shibie_id=inviter_sid,
-                        source_shibie_id=sid,
-                        payment_trade_no=out_trade_no,
-                        amount=EARNING_AMOUNT,
-                        status="credited",
-                        created_at=now,
-                    )
+                    text("UPDATE payments SET status = 'paid', paid_at = :now WHERE out_trade_no = :no"),
+                    {"now": _now(), "no": out_trade_no},
                 )
                 db.execute(
-                    text("UPDATE users SET total_earnings = total_earnings + :amt, "
-                         "available_balance = available_balance + :amt, "
-                         "torch_points = torch_points + 20, "
-                         "updated_at = :now WHERE shibie_id = :sid"),
-                    {"amt": EARNING_AMOUNT, "now": now, "sid": inviter_sid},
-                )
-                db.execute(
-                    torch_points_log.insert().values(
-                        shibie_id=inviter_sid, points=20,
-                        reason=f"邀请用户付费成功，获得 ¥{EARNING_AMOUNT}",
-                        source_type="payment", source_id=out_trade_no,
-                        created_at=now,
-                    )
+                    text("UPDATE users SET access_level = 'paid', paid_at = :now, updated_at = :now WHERE shibie_id = :sid"),
+                    {"now": _now(), "sid": sid},
                 )
 
-            db.commit()
+                # ── 收益分成：查找邀请人，给推广者分成 ──
+                ref = db.execute(
+                    text("SELECT inviter_shibie_id, invite_code FROM referrals WHERE invitee_shibie_id = :sid"),
+                    {"sid": sid},
+                ).fetchone()
+                if ref:
+                    inviter_sid = ref._mapping["inviter_shibie_id"]
+                    now = _now()
+                    db.execute(
+                        earnings.insert().values(
+                            earner_shibie_id=inviter_sid,
+                            source_shibie_id=sid,
+                            payment_trade_no=out_trade_no,
+                            amount=EARNING_AMOUNT,
+                            status="credited",
+                            created_at=now,
+                        )
+                    )
+                    db.execute(
+                        text("UPDATE users SET total_earnings = total_earnings + :amt, "
+                             "available_balance = available_balance + :amt, "
+                             "torch_points = torch_points + 20, "
+                             "updated_at = :now WHERE shibie_id = :sid"),
+                        {"amt": EARNING_AMOUNT, "now": now, "sid": inviter_sid},
+                    )
+                    db.execute(
+                        torch_points_log.insert().values(
+                            shibie_id=inviter_sid, points=20,
+                            reason=f"邀请用户付费成功，获得 ¥{EARNING_AMOUNT}",
+                            source_type="payment", source_id=out_trade_no,
+                            created_at=now,
+                        )
+                    )
+
+                db.commit()
+            except Exception:
+                db.rollback()
+                return "fail"
 
     return "success"
 
@@ -351,10 +358,60 @@ async def payment_callback(request: Request, db: Session = Depends(get_db)):
 @router.get("/payment/status/{order_id}")
 def payment_status(order_id: str, db: Session = Depends(get_db)):
     row = db.execute(
-        text("SELECT status FROM payments WHERE out_trade_no = :no"), {"no": order_id}
+        text("SELECT * FROM payments WHERE out_trade_no = :no"), {"no": order_id}
     ).fetchone()
     if not row:
         return {"success": False, "error": "订单不存在"}
 
-    paid = row._mapping["status"] == "paid"
-    return {"success": True, "data": {"paid": paid, "status": row._mapping["status"]}}
+    if row._mapping["status"] == "paid":
+        return {"success": True, "data": {"paid": True, "status": "paid"}}
+
+    # 本地 pending → 主动查询支付宝交易状态
+    alipay = _get_alipay()
+    if alipay:
+        try:
+            result = alipay.api_alipay_trade_query(out_trade_no=order_id)
+            trade_status = result.get("trade_status", "")
+            if trade_status in ("TRADE_SUCCESS", "TRADE_FINISHED"):
+                sid = row._mapping["shibie_id"]
+                now = _now()
+                db.execute(
+                    text("UPDATE payments SET status = 'paid', paid_at = :now WHERE out_trade_no = :no"),
+                    {"now": now, "no": order_id},
+                )
+                db.execute(
+                    text("UPDATE users SET access_level = 'paid', paid_at = :now, updated_at = :now WHERE shibie_id = :sid"),
+                    {"now": now, "sid": sid},
+                )
+
+                # 推荐人分成
+                ref = db.execute(
+                    text("SELECT inviter_shibie_id, invite_code FROM referrals WHERE invitee_shibie_id = :sid"),
+                    {"sid": sid},
+                ).fetchone()
+                if ref:
+                    inviter_sid = ref._mapping["inviter_shibie_id"]
+                    db.execute(
+                        earnings.insert().values(
+                            earner_shibie_id=inviter_sid,
+                            source_shibie_id=sid,
+                            payment_trade_no=order_id,
+                            amount=EARNING_AMOUNT,
+                            status="credited",
+                            created_at=now,
+                        )
+                    )
+                    db.execute(
+                        text("UPDATE users SET total_earnings = total_earnings + :amt, "
+                             "available_balance = available_balance + :amt, "
+                             "torch_points = torch_points + 20, "
+                             "updated_at = :now WHERE shibie_id = :sid"),
+                        {"amt": EARNING_AMOUNT, "now": now, "sid": inviter_sid},
+                    )
+
+                db.commit()
+                return {"success": True, "data": {"paid": True, "status": "paid"}}
+        except Exception:
+            pass
+
+    return {"success": True, "data": {"paid": False, "status": "pending"}}

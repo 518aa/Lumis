@@ -1,5 +1,7 @@
 package com.lumis.android
 
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import okhttp3.*
 import okio.ByteString
@@ -26,6 +28,9 @@ class WebSocketManager(
 
     private var webSocket: WebSocket? = null
     private var sessionId: String = java.util.UUID.randomUUID().toString()
+    private val reconnectHandler = Handler(Looper.getMainLooper())
+    private var reconnectAttempt = 0
+    private var intentionalDisconnect = false
 
     var isConnected = false
         private set
@@ -50,6 +55,8 @@ class WebSocketManager(
     private val listener = object : WebSocketListener() {
         override fun onOpen(webSocket: WebSocket, response: Response) {
             Log.i(tag, "WebSocket 已连接")
+            reconnectAttempt = 0
+            reconnectHandler.removeCallbacksAndMessages(null)
             sendHello()
         }
 
@@ -72,21 +79,26 @@ class WebSocketManager(
             Log.i(tag, "WebSocket 关闭中: $code $reason")
             webSocket.close(1000, null)
             updateConnectionState(false)
+            scheduleReconnect()
         }
 
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
             Log.e(tag, "WebSocket 连接失败: ${t.message}")
             updateConnectionState(false)
+            scheduleReconnect()
         }
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
             Log.i(tag, "WebSocket 已关闭: $code $reason")
             updateConnectionState(false)
+            scheduleReconnect()
         }
     }
 
     fun connect() {
         if (isConnected) return
+        intentionalDisconnect = false
+        reconnectAttempt = 0
 
         val request = Request.Builder()
             .url(wsUrl)
@@ -101,6 +113,9 @@ class WebSocketManager(
     }
 
     fun disconnect() {
+        intentionalDisconnect = true
+        reconnectHandler.removeCallbacksAndMessages(null)
+        reconnectAttempt = 0
         webSocket?.close(1000, "用户主动断开")
         webSocket = null
         updateConnectionState(false)
@@ -180,5 +195,24 @@ class WebSocketManager(
     private fun updateConnectionState(connected: Boolean) {
         isConnected = connected
         onConnectionState?.invoke(connected)
+    }
+
+    private val maxReconnectDelay = 60_000L
+
+    private fun scheduleReconnect() {
+        if (intentionalDisconnect) return
+        if (reconnectAttempt >= 10) {
+            Log.w(tag, "已达最大重连次数(10)，停止重连")
+            return
+        }
+        val delay = minOf(1000L shl reconnectAttempt, maxReconnectDelay)
+        reconnectAttempt++
+        Log.i(tag, "将在 ${delay}ms 后进行第 $reconnectAttempt 次重连")
+        reconnectHandler.postDelayed({
+            if (!intentionalDisconnect && !isConnected) {
+                Log.i(tag, "开始第 $reconnectAttempt 次重连...")
+                connect()
+            }
+        }, delay)
     }
 }

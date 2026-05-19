@@ -12,7 +12,10 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.graphics.drawable.GradientDrawable
+import android.view.Gravity
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
@@ -42,6 +45,7 @@ class MainActivity : AppCompatActivity() {
     private var isSessionActive = false
 
     private var isTtsSpeaking = false
+    private var lastResumeTime = 0L
     private var currentTtsText = ""
 
     private val mainScope = MainScope()
@@ -52,8 +56,10 @@ class MainActivity : AppCompatActivity() {
     private var userLesson: Int = 1
     private var userRound: Int = 0
     private var previousStars: Int = 0
-    private var userAccessLevel: String = "free"
+    private var userAccessLevel: String = ""
+        get() = field.ifBlank { prefs.getString("access_level", "free") ?: "free" }
     private var userInviteCode: String = ""
+    private var currentMode: String = "teaching"
 
     private var pulseAnimator: ObjectAnimator? = null
     private var rippleRunnable: Runnable? = null
@@ -81,14 +87,17 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        binding.btnAbout.setOnClickListener {
-            startActivity(Intent(this, AboutActivity::class.java))
+        binding.btnSettings.setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
         }
 
-        binding.tvTitle.setOnLongClickListener {
+        binding.tvGreeting.setOnLongClickListener {
             logout()
             true
         }
+
+        binding.btnModeTeaching.setOnClickListener { switchMode("teaching") }
+        binding.btnModeGenie.setOnClickListener { switchMode("genie_buggy") }
 
         updateUI()
         startPulseAnimation()
@@ -135,14 +144,14 @@ class MainActivity : AppCompatActivity() {
                     .setDuration(1200)
                     .setInterpolator(FastOutSlowInInterpolator())
                     .start()
-                binding.micContainer.postDelayed(this, 600)
+                binding.lumisContainer.postDelayed(this, 600)
             }
         }
-        binding.micContainer.postDelayed(rippleRunnable!!, 0)
+        binding.lumisContainer.postDelayed(rippleRunnable!!, 0)
     }
 
     private fun stopRippleAnimation() {
-        rippleRunnable?.let { binding.micContainer.removeCallbacks(it) }
+        rippleRunnable?.let { binding.lumisContainer.removeCallbacks(it) }
         rippleRunnable = null
         listOf(binding.ripple1, binding.ripple2).forEach {
             it.animate().cancel()
@@ -196,15 +205,17 @@ class MainActivity : AppCompatActivity() {
     private fun onStarsIncreased(newCount: Int) {
         val starView = android.widget.ImageView(this).apply {
             setImageResource(R.drawable.ic_star)
-            layoutParams = android.widget.FrameLayout.LayoutParams(48, 48)
+            layoutParams = android.view.ViewGroup.LayoutParams(48, 48)
         }
-        val root = binding.root as android.widget.FrameLayout
+        val root = binding.root as android.view.ViewGroup
         root.addView(starView)
 
-        val micLocation = IntArray(2)
-        binding.btnTalk.getLocationOnScreen(micLocation)
-        starView.translationX = micLocation[0].toFloat()
-        starView.translationY = micLocation[1].toFloat()
+        val parentLocation = IntArray(2)
+        val targetLocation = IntArray(2)
+        (root).getLocationOnScreen(parentLocation)
+        binding.lumisContainer.getLocationOnScreen(targetLocation)
+        starView.translationX = (targetLocation[0] - parentLocation[0]).toFloat()
+        starView.translationY = (targetLocation[1] - parentLocation[1]).toFloat()
 
         starView.animate()
             .translationYBy(-300f)
@@ -220,36 +231,91 @@ class MainActivity : AppCompatActivity() {
 
     // ─── 状态过渡 ───
 
+    private fun updateLumisFace(state: String) {
+        val resId = when (state) {
+            "idle" -> R.drawable.lumis_face_idle
+            "listening" -> R.drawable.lumis_face_listening
+            "speaking" -> R.drawable.lumis_face_speaking
+            "happy" -> R.drawable.lumis_face_happy
+            "thinking" -> R.drawable.lumis_face_thinking
+            else -> R.drawable.lumis_face_idle
+        }
+        binding.ivLumisFace.setImageResource(resId)
+    }
+
+    private fun switchMode(mode: String) {
+        if (mode == currentMode) return
+        currentMode = mode
+        updateModeToggleUI()
+
+        val shibieId = prefs.getString("shibie_id", "") ?: return
+        val backendUrl = prefs.getString("backend_url", "https://lumis.tpr.wales")!!
+        val api = LumisApi(backendUrl)
+        api.switchMode(shibieId, mode) { result ->
+            runOnUiThread {
+                if (result.isSuccess) {
+                    val msg = if (mode == "teaching") "已切换到 📚 教学 模式" else "请说 跟屁虫，即可切换"
+                    appendChat("系统", msg)
+                    updateLumisFace("happy")
+                    binding.root.postDelayed({ updateLumisFace("idle") }, 1500)
+                } else {
+                    currentMode = if (mode == "teaching") "genie_buggy" else "teaching"
+                    updateModeToggleUI()
+                    Toast.makeText(this, "切换失败: ${result.exceptionOrNull()?.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun updateModeToggleUI() {
+        if (currentMode == "teaching") {
+            binding.btnModeTeaching.setBackgroundResource(R.drawable.bg_mode_toggle_selected)
+            binding.btnModeTeaching.setTextColor(getColor(R.color.text_on_purple))
+            binding.btnModeGenie.background = null
+            binding.btnModeGenie.setTextColor(getColor(R.color.text_mid))
+        } else {
+            binding.btnModeGenie.setBackgroundResource(R.drawable.bg_mode_toggle_selected)
+            binding.btnModeGenie.setTextColor(getColor(R.color.text_on_purple))
+            binding.btnModeTeaching.background = null
+            binding.btnModeTeaching.setTextColor(getColor(R.color.text_mid))
+        }
+    }
+
     private fun transitionToIdle() {
         stopRippleAnimation()
         hideConnectingDots()
         binding.btnTalk.animate().alpha(1f).setDuration(300).start()
-        animateStatusColor("#FF6B9D", "#A0A4D0")
+        animateStatusColor("#72C8A0", "#5A5278")
+        updateLumisFace("idle")
         startPulseAnimation()
     }
 
     private fun transitionToConnecting() {
         stopPulseAnimation()
         binding.micGlow.alpha = 0.3f
-        animateStatusColor("#A0A4D0", "#FFD166")
+        animateStatusColor("#5A5278", "#F7C948")
+        updateLumisFace("thinking")
         showConnectingDots()
     }
 
     private fun transitionToRecording() {
         hideConnectingDots()
-        animateStatusColor("#FFD166", "#00E5FF")
+        animateStatusColor("#F7C948", "#72C8A0")
+        updateLumisFace("listening")
         startRippleAnimation()
     }
 
     private fun transitionToSpeaking() {
         stopRippleAnimation()
         binding.btnTalk.animate().alpha(0.6f).setDuration(300).start()
-        animateStatusColor("#00E5FF", "#FF6B9D")
+        animateStatusColor("#72C8A0", "#7C5CBF")
+        updateLumisFace("speaking")
     }
 
     private fun transitionBackToListening() {
         binding.btnTalk.animate().alpha(1f).setDuration(300).start()
-        animateStatusColor("#FF6B9D", "#00E5FF")
+        animateStatusColor("#7C5CBF", "#72C8A0")
+        updateLumisFace("listening")
         startRippleAnimation()
     }
 
@@ -277,7 +343,10 @@ class MainActivity : AppCompatActivity() {
                         userRound = user.current_round
                         userAccessLevel = user.access_level
                         userInviteCode = user.invite_code
-                        prefs.edit().putString("invite_code", userInviteCode).apply()
+                        prefs.edit()
+                            .putString("invite_code", userInviteCode)
+                            .putString("access_level", userAccessLevel)
+                            .apply()
                         updateUserInfo()
 
                         if (userStars > previousStars && previousStars > 0) {
@@ -293,6 +362,14 @@ class MainActivity : AppCompatActivity() {
                     }
                 }.onFailure { e ->
                     Log.e(tag, "获取用户资料失败: ${e.message}")
+                    if (e.message == "UNAUTHORIZED") {
+                        prefs.edit()
+                            .remove("access_token")
+                            .remove("refresh_token")
+                            .apply()
+                        navigateToLogin()
+                        return@runOnUiThread
+                    }
                     if (!isSessionActive) {
                         userName = prefs.getString("username", "") ?: ""
                     }
@@ -319,7 +396,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateUserInfo() {
-        binding.tvTitle.text = "🌟 Lumis · $userName · $userStars⭐ · 第${userLesson}课"
+        binding.tvGreeting.text = "${getGreeting()} $userName 👋"
+        binding.progressPill.text = "⭐ $userStars 星 · 第${userLesson}课"
+        if (userName.isNotBlank()) {
+            binding.tvUserName.visibility = View.VISIBLE
+            binding.tvUserName.text = userName
+        }
+    }
+
+    private fun getGreeting(): String {
+        val hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
+        return when (hour) {
+            in 6..11 -> "早上好"
+            in 12..17 -> "下午好"
+            in 18..22 -> "晚上好"
+            else -> "你好"
+        }
     }
 
     private fun startSession() {
@@ -349,7 +441,7 @@ class MainActivity : AppCompatActivity() {
 
         isSessionActive = true
         isTtsSpeaking = false
-        binding.tvChat.text = ""
+        binding.chatContainer.removeAllViews()
         appendChat("系统", "正在连接 Lumis 老师...")
         transitionToConnecting()
         updateUI()
@@ -404,7 +496,10 @@ class MainActivity : AppCompatActivity() {
                         userRound = user.current_round
                         userAccessLevel = user.access_level
                         userInviteCode = user.invite_code
-                        prefs.edit().putString("invite_code", userInviteCode).apply()
+                        prefs.edit()
+                            .putString("invite_code", userInviteCode)
+                            .putString("access_level", userAccessLevel)
+                            .apply()
                         updateUserInfo()
                     }
                     cont.resume(user != null) {}
@@ -472,7 +567,7 @@ class MainActivity : AppCompatActivity() {
                 if (state == "stop") {
                     audioCodec?.stopRecording()
                     binding.tvStatus.text = "处理中..."
-                    animateStatusColor("#00E5FF", "#FFD166")
+                    animateStatusColor("#72C8A0", "#F7C948")
                 }
             }
         }
@@ -501,18 +596,52 @@ class MainActivity : AppCompatActivity() {
     private fun updateUI() {
         if (isSessionActive) {
             binding.btnTalk.isActivated = true
-            binding.btnAbout.visibility = View.GONE
+            binding.btnSettings.visibility = View.GONE
         } else {
             binding.btnTalk.isActivated = false
-            binding.btnAbout.visibility = View.VISIBLE
+            binding.btnSettings.visibility = View.VISIBLE
             binding.tvStatus.text = "点击开始上课"
         }
     }
 
     private fun appendChat(speaker: String, text: String) {
-        val current = binding.tvChat.text.toString()
-        val line = if (current.isBlank()) "[$speaker] $text" else "\n[$speaker] $text"
-        binding.tvChat.append(line)
+        val isLumis = speaker == "Lumis" || speaker == "系统"
+        val isMintMode = currentMode == "genie_buggy"
+
+        val bubble = TextView(this).apply {
+            this.text = text
+            textSize = 14f
+            setPadding(28, 20, 28, 20)
+            maxWidth = resources.getDimensionPixelSize(R.dimen.chat_bubble_max_width)
+
+            val bgRes = when {
+                isLumis && isMintMode -> R.drawable.bg_chat_bubble_lumis_mint
+                isLumis -> R.drawable.bg_chat_bubble_lumis
+                isMintMode -> R.drawable.bg_chat_bubble_user_mint
+                else -> R.drawable.bg_chat_bubble_user
+            }
+            setBackgroundResource(bgRes)
+
+            setTextColor(
+                if (isLumis) getColor(R.color.text_main)
+                else getColor(R.color.text_on_purple)
+            )
+        }
+
+        val wrapper = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = if (isLumis) Gravity.START else Gravity.END
+            val lp = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            lp.topMargin = 8
+            lp.bottomMargin = 8
+            layoutParams = lp
+            addView(bubble)
+        }
+
+        binding.chatContainer.addView(wrapper)
         binding.scrollChat.post {
             binding.scrollChat.fullScroll(ScrollView.FOCUS_DOWN)
         }
@@ -547,23 +676,39 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        val starView = binding.root.findViewWithTag<com.lumis.android.ui.StarFieldView>("starField")
-        starView?.stopAnimating()
     }
 
     override fun onResume() {
         super.onResume()
-        val starView = binding.root.findViewWithTag<com.lumis.android.ui.StarFieldView>("starField")
-        starView?.startAnimating()
+        val now = System.currentTimeMillis()
+        if (now - lastResumeTime > 5000) {
+            fetchUserProfile()
+        }
+        lastResumeTime = now
     }
 
     override fun onDestroy() {
-        super.onDestroy()
+        paywallPollTimer?.cancel()
+        paywallPollTimer = null
+        paywallDialog?.dismiss()
+        paywallDialog = null
         mainScope.cancel()
         stopPulseAnimation()
         stopRippleAnimation()
         hideConnectingDots()
-        stopSession()
+        if (!isFinishing) {
+            stopSession()
+        } else {
+            isSessionActive = false
+            stopPolling()
+            audioCodec?.stopRecording()
+            audioCodec?.stopPlayback()
+            wsManager?.disconnect()
+            audioCodec?.release()
+            audioCodec = null
+            wsManager = null
+        }
+        super.onDestroy()
     }
 
     private fun logout() {
@@ -684,6 +829,7 @@ class MainActivity : AppCompatActivity() {
     private fun checkPaywall() {
         val sid = prefs.getString("shibie_id", "") ?: return
         if (sid.isBlank()) return
+        if (prefs.getString("access_level", "free") in listOf("paid", "invited")) return
         if (userAccessLevel in listOf("paid", "invited")) return
         if (userLesson <= 60) return
         if (paywallDialogShowing) return
@@ -763,8 +909,15 @@ class MainActivity : AppCompatActivity() {
 
                         if (data.qr_code.isNotBlank()) {
                             try {
-                                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(data.qr_code)))
-                            } catch (_: Exception) {}
+                                val alipayUri = Uri.parse(
+                                    "alipays://platformapi/startapp?saId=10000007&qrcode=${Uri.encode(data.qr_code)}"
+                                )
+                                startActivity(Intent(Intent.ACTION_VIEW, alipayUri))
+                            } catch (_: Exception) {
+                                try {
+                                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(data.qr_code)))
+                                } catch (_: Exception) {}
+                            }
                         }
 
                         paywallPollTimer = java.util.Timer().apply {
@@ -777,8 +930,10 @@ class MainActivity : AppCompatActivity() {
                                             paywallPollTimer = null
                                             runOnUiThread {
                                                 userAccessLevel = "paid"
+                                                prefs.edit().putString("access_level", "paid").apply()
                                                 paywallDialog?.dismiss()
-                                                Toast.makeText(this@MainActivity, "🎉 支付成功！课程已解锁", Toast.LENGTH_LONG).show()
+                                                showPaymentSuccessDialog()
+                                                fetchUserProfile()
                                             }
                                         }
                                     }
@@ -809,6 +964,7 @@ class MainActivity : AppCompatActivity() {
                     codeBtn.isEnabled = true
                     if (result.isSuccess) {
                         userAccessLevel = "invited"
+                        prefs.edit().putString("access_level", "invited").apply()
                         paywallDialog?.dismiss()
                         Toast.makeText(this, "🎉 邀请码激活成功！课程已解锁", Toast.LENGTH_LONG).show()
                     } else {
@@ -817,6 +973,49 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun showPaymentSuccessDialog() {
+        val dp = resources.displayMetrics.density.toInt()
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER_HORIZONTAL
+            setPadding(24 * dp, 28 * dp, 24 * dp, 12 * dp)
+        }
+
+        TextView(this).apply {
+            text = "🎉"
+            textSize = 48f
+            container.addView(this)
+        }
+
+        TextView(this).apply {
+            text = "支付成功！"
+            setTextColor(getColor(R.color.text_main))
+            textSize = 22f
+            setTypeface(null, android.graphics.Typeface.BOLD)
+            val m = 8 * dp
+            setPadding(0, m, 0, m)
+            container.addView(this)
+        }
+
+        TextView(this).apply {
+            text = "全部 120 节课程已解锁\n快去继续学习吧！"
+            setTextColor(getColor(R.color.text_mid))
+            textSize = 15f
+            container.addView(this)
+        }
+
+        AlertDialog.Builder(this)
+            .setView(container)
+            .setPositiveButton("开始学习") { dialog, _ -> dialog.dismiss() }
+            .setCancelable(false)
+            .create()
+            .apply {
+                show()
+                getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(getColor(R.color.purple))
+                window?.setBackgroundDrawableResource(R.color.surface_card)
+            }
     }
 
     companion object {

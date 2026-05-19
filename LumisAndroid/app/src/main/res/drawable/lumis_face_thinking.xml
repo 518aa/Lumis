@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+
+    <!-- 身体 -->
+    <path
+        android:fillColor="#7C5CBF"
+        android:pathData="M30,25 Q30,10 60,10 Q90,10 90,25 L92,85 Q92,105 60,105 Q28,105 28,85 Z" />
+
+    <!-- 屏幕/脸 -->
+    <path
+        android:fillColor="#EDE4F7"
+        android:pathData="M36,30 Q36,20 60,20 Q84,20 84,30 L85,78 Q85,92 60,92 Q35,92 35,78 Z" />
+
+    <!-- 左眼 (向上看) -->
+    <path
+        android:fillColor="#2C2440"
+        android:pathData="M46,44 Q46,38 52,38 Q58,38 58,44 Q58,50 52,50 Q46,50 46,44 Z" />
+    <!-- 左眼高光 (下方) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M50,46 Q50,44 52,44 Q54,44 54,46 Q54,48 52,48 Q50,48 50,46 Z" />
+
+    <!-- 右眼 (向上看) -->
+    <path
+        android:fillColor="#2C2440"
+        android:pathData="M62,44 Q62,38 68,38 Q74,38 74,44 Q74,50 68,50 Q62,50 62,44 Z" />
+    <!-- 右眼高光 (下方) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M66,46 Q66,44 68,44 Q70,44 70,46 Q70,48 68,48 Q66,48 66,46 Z" />
+
+    <!-- 思考嘴 (波浪线) -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#2C2440"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:pathData="M50,66 Q54,64 58,66 Q62,68 66,66 Q70,64 74,66" />
+
+    <!-- 思考气泡 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#E0D8F0"
+        android:strokeWidth="1"
+        android:pathData="M88,20 Q88,14 96,14 Q104,14 104,20 Q104,26 96,26 Q88,26 88,20 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#E0D8F0"
+        android:strokeWidth="1"
+        android:pathData="M82,28 Q82,26 84,26 Q86,26 86,28 Q86,30 84,30 Q82,30 82,28 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#E0D8F0"
+        android:strokeWidth="1"
+        android:pathData="M78,34 Q78,33 79,33 Q80,33 80,34 Q80,35 79,35 Q78,35 78,34 Z" />
+
+    <!-- ? 号 -->
+    <path
+        android:fillColor="#2C2440"
+        android:pathData="M92,16 L92,14 Q92,12 94,12 L98,12 Q100,12 100,14 L100,16 Q100,18 98,18 L96,18 L96,20" />
+    <path
+        android:fillColor="#2C2440"
+        android:pathData="M95,22 Q95,21 96,21 Q97,21 97,22 Q97,23 96,23 Q95,23 95,22 Z" />
+
+    <!-- 天线 -->
+    <path
+        android:fillColor="#7C5CBF"
+        android:pathData="M57,10 L57,2 Q57,0 60,0 Q63,0 63,2 L63,10" />
+    <path
+        android:fillColor="#F7C948"
+        android:pathData="M56,3 Q56,0 60,0 Q64,0 64,3 Q64,6 60,6 Q56,6 56,3 Z" />
+</vector>

@@ -1,91 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFF8F0"
-    android:padding="16dp">
+    android:background="@color/cream"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
+        <!-- Header -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="连接设置"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#333333"
-            android:layout_marginBottom="16dp" />
+            android:background="@drawable/bg_settings_header"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/spacing_xl"
+            android:paddingTop="@dimen/spacing_lg"
+            android:paddingBottom="@dimen/spacing_xl"
+            android:gravity="center_horizontal">
 
-        <com.google.android.material.textfield.TextInputLayout
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/lumis_face_idle"
+                android:contentDescription="Lumis" />
+
+            <TextView
+                android:id="@+id/tvSettingsName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:text="用户"
+                android:textColor="@color/text_on_purple"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvSettingsEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:text=""
+                android:textColor="#B5B0CC"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:hint="WebSocket 服务器 URL">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etWsUrl"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_md">
+
+            <!-- 学习设置分组 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_sm"
+                android:text="学习设置"
+                android:textColor="@color/text_soft"
+                android:textSize="13sp" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textUri"
-                android:text="wss://api.tenclass.net/xiaozhi/v1/" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:orientation="vertical"
+                android:background="@drawable/bg_user_card"
+                android:padding="@dimen/spacing_md"
+                android:layout_marginBottom="@dimen/spacing_lg">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:hint="Access Token">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etToken"
+                <!-- 关于 Lumis -->
+                <LinearLayout
+                    android:id="@+id/btnAboutLink"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="📖 关于 Lumis"
+                        android:textColor="@color/text_main"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="›"
+                        android:textColor="@color/text_soft"
+                        android:textSize="20sp" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="#F0EBF7" />
+
+                <!-- 分享给朋友 -->
+                <LinearLayout
+                    android:id="@+id/btnShareLink"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="🔗 分享给朋友"
+                        android:textColor="@color/text_main"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="›"
+                        android:textColor="@color/text_soft"
+                        android:textSize="20sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 退出登录 -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnLogout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textVisiblePassword" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_height="@dimen/button_height"
+                android:layout_marginBottom="@dimen/spacing_lg"
+                android:background="@drawable/btn_coral"
+                android:text="退出登录"
+                android:textColor="@color/text_on_purple"
+                android:textSize="16sp"
+                android:textAllCaps="false"
+                android:elevation="1dp"
+                android:stateListAnimator="@null" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:hint="Device ID (MAC 地址)">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etDeviceId"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:text="f0:18:98:3d:a1:35" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:hint="Client ID (UUID)">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etClientId"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:text="54b01fa1-23b7-4f1a-84eb-b36f42095595" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <Button
-            android:id="@+id/btnSave"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="保存"
-            android:backgroundTint="#FF6B35"
-            android:textColor="#FFFFFF" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="提示：这些参数来自 py-xiaozhi 的 config.json，也可以在小智管理后台查看。"
-            android:textSize="13sp"
-            android:textColor="#999999" />
-
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

@@ -1,7 +1,9 @@
 package com.lumis.android
 
+import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
+import android.view.View
+
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import com.lumis.android.databinding.ActivitySettingsBinding
@@ -15,27 +17,38 @@ class SettingsActivity : AppCompatActivity() {
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "设置"
-
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
-        // 读取保存的配置
-        binding.etWsUrl.setText(prefs.getString("ws_url", "wss://api.tenclass.net/xiaozhi/v1/"))
-        binding.etToken.setText(prefs.getString("ws_token", ""))
-        binding.etDeviceId.setText(prefs.getString("device_id", ""))
-        binding.etClientId.setText(prefs.getString("client_id", ""))
+        binding.tvSettingsName.text = prefs.getString("username", "用户")
+        binding.tvSettingsEmail.text = prefs.getString("user_email", "")
 
-        binding.btnSave.setOnClickListener {
+        binding.btnAboutLink.setOnClickListener {
+            startActivity(Intent(this, AboutActivity::class.java))
+        }
+
+        binding.btnShareLink.setOnClickListener {
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, "Lumis - 儿童英语语音课堂\nhttps://lumis.tpr.wales")
+            }
+            startActivity(Intent.createChooser(shareIntent, "分享 Lumis"))
+        }
+
+        binding.btnLogout.setOnClickListener {
             prefs.edit()
-                .putString("ws_url", binding.etWsUrl.text.toString().trim())
-                .putString("ws_token", binding.etToken.text.toString().trim())
-                .putString("device_id", binding.etDeviceId.text.toString().trim())
-                .putString("client_id", binding.etClientId.text.toString().trim())
+                .remove("access_token")
+                .remove("refresh_token")
+                .remove("account_id")
+                .remove("username")
+                .remove("user_email")
                 .apply()
 
-            Toast.makeText(this, "已保存", Toast.LENGTH_SHORT).show()
-            finish()
+            startActivity(Intent(this, LoginActivity::class.java))
+            finishAffinity()
+        }
+
+        binding.root.findViewById<View?>(android.R.id.content)?.let {
+            it.setOnClickListener { /* dismiss potential dialogs */ }
         }
     }
 

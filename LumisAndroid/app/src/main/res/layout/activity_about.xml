@@ -3,749 +3,652 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_space_gradient"
+    android:background="@color/cream"
     android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="@dimen/spacing_md">
+        android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/spacing_sm"
-            android:layout_marginBottom="@dimen/spacing_xs"
-            android:text="LUMIS"
-            android:textColor="@color/accent_gold"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:letterSpacing="0.15" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="@dimen/spacing_lg"
-            android:gravity="center"
-            android:text="一个父亲，用代码为女儿造的数字英语老师"
-            android:textColor="@color/text_secondary"
-            android:textSize="15sp"
-            android:lineSpacingExtra="4dp" />
-
-        <!-- 缘起 -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_md"
-            app:cardBackgroundColor="@color/surface_card"
-            app:cardCornerRadius="@dimen/corner_radius"
-            app:cardElevation="2dp"
-            app:strokeColor="@color/surface_card_border"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/spacing_md">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="缘  起"
-                    android:textColor="@color/accent_cyan"
-                    android:textSize="17sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.05" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="yingyujinjie、lumis-api、lunis-api、learning-adventure、task-research-english——五个项目目录，五次推翻重来，横跨三个月。如果有人翻看这些代码仓库的 git log，他会看到一个父亲从焦虑到执拗、从执拗到疯狂、从疯狂到顿悟的完整弧线。"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="一切的起点，是一个朴素的念头：我的孩子，能不能真正学会说英语？不是那种考试能拿90分但张嘴就哑的英语。是那种碰到一个外国小朋友，能自然地说「Hi! I&#x2019;m Lili! Do you want to play with me?」的英语。"
-                    android:textColor="@color/accent_gold"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- 那堵墙 -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_md"
-            app:cardBackgroundColor="@color/surface_card"
-            app:cardCornerRadius="@dimen/corner_radius"
-            app:cardElevation="2dp"
-            app:strokeColor="@color/surface_card_border"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/spacing_md">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="拆掉那堵看不见的墙"
-                    android:textColor="@color/accent_cyan"
-                    android:textSize="17sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.05" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="他认真读完了教育部《义务教育英语课程标准（2022年版）》，然后像拆一台坏掉的机器一样，把中国英语教学的四个轮子一个一个卸下来检查。"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="人教PEP版：一节课40分钟，一周两到三节，班上40个孩子。老师问「What&#x2019;s your name?」，每个孩子轮到开口说一句的时间，不到30秒。一周的总开口时长，加起来可能不超过3分钟。"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="校外培训：一年两万起步的外教课，一周一次，每次25分钟。钱花了，时间花了，孩子依然张不开嘴。"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="他翻完了英国 Letters and Sounds 六阶段体系，翻完了美国 Common Core 标准——这些国际主流方法论都在说同一件事：语言习得的核心是大量、高频、有意义的口语交互。而中国的英语课堂，恰恰给不了这个。"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="这是一堵墙。一堵课程大纲、教学法、班级规模三重锁死的墙。传统路径翻不过去。那就绕过去。"
-                    android:textColor="@color/accent_gold"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- 五次推倒重来 -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_md"
-            app:cardBackgroundColor="@color/surface_card"
-            app:cardCornerRadius="@dimen/corner_radius"
-            app:cardElevation="2dp"
-            app:strokeColor="@color/surface_card_border"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/spacing_md">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="五次推倒重来"
-                    android:textColor="@color/accent_cyan"
-                    android:textSize="17sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.05" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="第一次：一口气设计了6个阶段、24周、120课的完整课程体系。做完了才发现——120课，每课10分钟，总共20小时的纯对话量。对5岁的孩子来说，这不是课程，这是负担。推倒。"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="第二次：重新按「能力级别」组织。进步很大，但产品形态还是API服务，孩子怎么用？推倒。"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="第三次：接入了智能体平台，做了AI Bot。产品形态找到了，但限制太多。推倒。"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="第四次：做了语文、数学、英语三科合一的综合学习平台。技术栈最漂亮的一次，但他心里清楚——大而全不是他要的东西。推倒。"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="第五次，他找到了正确的载体——LUMIS AI语音助手。这一次他没有做大而全的平台，没有做花哨的游戏，没有做复杂的UI。他只做了两件事——但做到了极致。"
-                    android:textColor="@color/accent_gold"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- 模式一：教学 -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_md"
-            app:cardBackgroundColor="@color/surface_card"
-            app:cardCornerRadius="@dimen/corner_radius"
-            app:cardElevation="2dp"
-            app:strokeColor="@color/surface_card_border"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/spacing_md">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="LUMIS 教学"
-                    android:textColor="@color/accent_cyan"
-                    android:textSize="17sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.05" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="打开App，对着LUMIS说「开始上课」。Lumis会用孩子的名字打招呼：「Hi 丽丽! Welcome back! Today we&#x2019;re going to learn about animals!」然后进入精心设计的四轮10分钟教学："
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="第0轮（1分钟）问候与热身，第1轮（3分钟）新词领读，第2轮（2分钟）互动与纠错，第3轮（1分钟）总结与期待。10分钟。精准、高效、不拖沓。"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="Lumis永远不会说「错了」或「不对」。如果孩子把「dog」说成了「dag」，Lumis会说「Yes! Dog! D-O-G! Dog!」——用「回声法」把正确的发音轻轻递回去，让孩子自己听到差别，自己修正。这不是教学法，这是心理学。"
-                    android:textColor="@color/accent_gold"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- 课程体系 -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_md"
-            app:cardBackgroundColor="@color/surface_card"
-            app:cardCornerRadius="@dimen/corner_radius"
-            app:cardElevation="2dp"
-            app:strokeColor="@color/surface_card_border"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/spacing_md">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="120课，6大阶段"
-                    android:textColor="@color/accent_cyan"
-                    android:textSize="17sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.05" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="6dp"
-                    android:text="第一阶段 1-20课\n打招呼、数字1-10、颜色"
-                    android:textColor="@color/accent_orange_light"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="6dp"
-                    android:text="第二阶段 21-40课\n26个字母 A-Z 的自然发音"
-                    android:textColor="@color/accent_orange_light"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="6dp"
-                    android:text="第三阶段 41-60课\n家庭成员、身体部位、食物、动物"
-                    android:textColor="@color/accent_orange_light"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="6dp"
-                    android:text="第四阶段 61-80课\n5大核心句型：This is / I like / What is this / I want / How many"
-                    android:textColor="@color/accent_orange_light"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="6dp"
-                    android:text="第五阶段 81-100课\n一天的时光、天气季节、学校生活、生日派对"
-                    android:textColor="@color/accent_orange_light"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="6dp"
-                    android:text="第六阶段 101-120课\n故事听说、角色扮演（餐厅点餐、看医生）、毕业"
-                    android:textColor="@color/accent_orange_light"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="每天10分钟，一周5天，24周（约半年）走完120课。"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- 半年后 -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_md"
-            app:cardBackgroundColor="@color/surface_card"
-            app:cardCornerRadius="@dimen/corner_radius"
-            app:cardElevation="2dp"
-            app:strokeColor="@color/surface_card_border"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/spacing_md">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="半年后，你的孩子能做到什么？"
-                    android:textColor="@color/accent_cyan"
-                    android:textSize="17sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.05" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="听懂并回应日常英语问候和指令\n掌握200+核心词汇和5大核心句型\n能在真实场景中用英语点餐、购物、介绍自己\n建立英语语感和自然拼读的基础直觉"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="最重要的是——不怕开口说英语。这不是「学会英语」，这是打破沉默。"
-                    android:textColor="@color/accent_gold"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- 模式二：跟屁虫 -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_md"
-            app:cardBackgroundColor="@color/surface_card"
-            app:cardCornerRadius="@dimen/corner_radius"
-            app:cardElevation="2dp"
-            app:strokeColor="@color/surface_card_border"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/spacing_md">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="跟屁虫模式"
-                    android:textColor="@color/accent_cyan"
-                    android:textSize="17sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.05" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="吃饭时，孩子说「我要吃苹果」。Lumis立刻跟上：「I want apple!」孩子说「这个好好吃」。Lumis说：「This is yummy!」孩子说「妈妈我好困」。Lumis说：「Mommy, I&#x2019;m sleepy!」"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="没有解释，没有教学，没有表扬，没有纠正。只有翻译。最简短的翻译。像一个影子一样，孩子说什么，它就用英语复述一遍。这是「跟屁虫」这个名字的由来——它不是在教你英语，它是在替你的影子说英语。"
-                    android:textColor="@color/accent_gold"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="激活方式？对着LUMIS说「跟屁虫」三个字就行。想切回教学模式？说「Lumis」。"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- 五个不可能 -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_md"
-            app:cardBackgroundColor="@color/surface_card"
-            app:cardCornerRadius="@dimen/corner_radius"
-            app:cardElevation="2dp"
-            app:strokeColor="@color/surface_card_border"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/spacing_md">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="拆解传统教学的五个不可能"
-                    android:textColor="@color/accent_cyan"
-                    android:textSize="17sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.05" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="不可能一：一个老师对一个学生。\n公立小学师生比1:40，一堂英语课分到每个孩子的口语训练时间不到1分钟。而Lumis是1:1的。每一秒都是你的。"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="不可能二：高频。\n学校一周两到三节英语课。Lumis是每天10分钟加全天候跟屁虫。一周的口语交互量，相当于学校一个月。"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="不可能三：即时纠错。\n40个孩子的课堂上，老师根本听不到你把「three」说成了「tree」。Lumis听得到。而且它不会说「错了」——它会用正确的方式再说一遍，让你自己发现差异。"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="不可能四：情境真实。\n课本里的「How are you? I&#x2019;m fine, thank you, and you?」不是语言，是条件反射。Lumis的120课里，孩子会在「餐厅」里点餐，在「看医生」时描述症状，在「生日派对」上说 Happy Birthday。"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="不可能五：持续浸润。\n跟屁虫模式让英语变成生活的一部分——「我要喝水」变成「I want water」，不需要刻意记忆，因为大脑会把高频关联的输入直接刻进长期记忆。"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="五个「不可能」，Lumis用一个AI语音助手，全部解决。"
-                    android:textColor="@color/accent_gold"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- 使用指南 -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_md"
-            app:cardBackgroundColor="@color/surface_card"
-            app:cardCornerRadius="@dimen/corner_radius"
-            app:cardElevation="2dp"
-            app:strokeColor="@color/surface_card_border"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/spacing_md">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="使用指南"
-                    android:textColor="@color/accent_cyan"
-                    android:textSize="17sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.05" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="开始上课：说「开始上课」或「Lumis」\n跟屁虫：说「跟屁虫」\n查看进度：说「我学到第几课了」\n跳课：说「我要学第X课」\n改名字：说「把我的名字改成XX」"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="每日节奏：固定时段10分钟LUMIS教学 + 吃饭玩耍时开启跟屁虫模式。长按顶部标题栏可退出登录。"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- 结尾 -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_md"
-            app:cardBackgroundColor="@color/surface_card"
-            app:cardCornerRadius="@dimen/corner_radius"
-            app:cardElevation="2dp"
-            app:strokeColor="@color/surface_card_border"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/spacing_md">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="这不是一个产品"
-                    android:textColor="@color/accent_cyan"
-                    android:textSize="17sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.05" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="他不是在做创业项目，不是在追赶AI教育的风口，不是在写商业计划书。他是一个父亲，他看到了传统英语教育的系统性缺陷——不是某一个老师的错，不是某一本教材的错，是整个体系的设计就注定了大多数孩子学完十年英语依然张不开嘴。"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="他用了三个月，调研了国内外四套主流教材体系，读了教育部的课程标准，研究了克拉申的输入假说和艾宾浩斯的遗忘曲线，用五种不同的技术架构做了五个版本——最终，他做出了一个每天只需要10分钟的东西。"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="10分钟。少刷两个短视频的时间。但如果你坚持半年，你的孩子会拥有一项中国大多数成年人都不具备的能力——自然地、不恐惧地、带着享受地用英语交流。"
-                    android:textColor="@color/accent_gold"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    android:lineSpacingExtra="5dp"
-                    android:text="如果你也看到了那堵墙，如果你也不希望自己的孩子再走「学十年英语张不开嘴」的老路——你可以试试。每天10分钟。从一个「Hello」开始。"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_md"
-                    android:gravity="center"
-                    android:lineSpacingExtra="5dp"
-                    android:text="Lumis — 一个父亲能给孩子最好的礼物，\n不是恐惧学习的阴影，\n而是开口说话的勇气。"
-                    android:textColor="@color/accent_gold"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.02" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- 版本号 -->
-        <TextView
-            android:id="@+id/tvVersion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/spacing_md"
-            android:textColor="@color/text_dim"
-            android:textSize="12sp" />
-
-        <!-- 火炬计划按钮 -->
+        <!-- Hero 区域 -->
         <LinearLayout
-            android:id="@+id/btnTorchPlan"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="@dimen/spacing_lg"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:background="@drawable/bg_share_button"
-            android:clickable="true"
-            android:focusable="true"
-            android:elevation="2dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🔥 火炬计划（合伙人）"
-                android:textColor="@color/accent_orange"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <!-- 分享给朋友 -->
-        <LinearLayout
-            android:id="@+id/btnShare"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="@dimen/spacing_md"
-            android:layout_marginBottom="@dimen/spacing_xl"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:background="@drawable/bg_share_button"
-            android:clickable="true"
-            android:focusable="true"
-            android:elevation="2dp">
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_about_hero"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/spacing_xl"
+            android:paddingTop="@dimen/spacing_xl"
+            android:paddingBottom="@dimen/spacing_lg"
+            android:gravity="center_horizontal">
 
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_share"
-                android:layout_marginEnd="8dp" />
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/lumis_face_happy"
+                android:contentDescription="Lumis" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="分享给朋友"
-                android:textColor="@color/accent_orange"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:layout_marginTop="@dimen/spacing_md"
+                android:text="LUMIS"
+                android:textColor="@color/gold"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.15" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:gravity="center"
+                android:text="一个父亲，用代码为女儿造的数字英语老师"
+                android:textColor="#B5B0CC"
+                android:textSize="14sp"
+                android:lineSpacingExtra="4dp" />
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_md">
+
+            <!-- 🌱 缘起 -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_md"
+                app:cardBackgroundColor="@color/surface_white"
+                app:cardCornerRadius="@dimen/corner_md"
+                app:cardElevation="1dp"
+                app:strokeColor="#F0EBF7"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_md">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🌱 缘起"
+                        android:textColor="@color/purple"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:lineSpacingExtra="5dp"
+                        android:text="yingyujinjie、lumis-api、lunis-api、learning-adventure、task-research-english——五个项目目录，五次推翻重来，横跨三个月。如果有人翻看这些代码仓库的 git log，他会看到一个父亲从焦虑到执拗、从执拗到疯狂、从疯狂到顿悟的完整弧线。"
+                        android:textColor="@color/text_mid"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:lineSpacingExtra="5dp"
+                        android:text="一切的起点，是一个朴素的念头：我的孩子，能不能真正学会说英语？不是那种考试能拿90分但张嘴就哑的英语。是那种碰到一个外国小朋友，能自然地说「Hi! I&#x2019;m Lili! Do you want to play with me?」的英语。"
+                        android:textColor="@color/coral"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 🧱 拆掉那堵墙 -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_md"
+                app:cardBackgroundColor="@color/surface_white"
+                app:cardCornerRadius="@dimen/corner_md"
+                app:cardElevation="1dp"
+                app:strokeColor="#F0EBF7"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_md">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🧱 拆掉那堵看不见的墙"
+                        android:textColor="@color/purple"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:lineSpacingExtra="5dp"
+                        android:text="人教PEP版：一节课40分钟，一周两到三节，班上40个孩子。老师问「What&#x2019;s your name?」，每个孩子轮到开口说一句的时间，不到30秒。一周的总开口时长，加起来可能不超过3分钟。"
+                        android:textColor="@color/text_mid"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:lineSpacingExtra="5dp"
+                        android:text="校外培训：一年两万起步的外教课，一周一次，每次25分钟。钱花了，时间花了，孩子依然张不开嘴。"
+                        android:textColor="@color/text_mid"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:lineSpacingExtra="5dp"
+                        android:text="这是一堵墙。一堵课程大纲、教学法、班级规模三重锁死的墙。传统路径翻不过去。那就绕过去。"
+                        android:textColor="@color/coral"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 🔄 五次推倒重来 -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_md"
+                app:cardBackgroundColor="@color/surface_white"
+                app:cardCornerRadius="@dimen/corner_md"
+                app:cardElevation="1dp"
+                app:strokeColor="#F0EBF7"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_md">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🔄 五次推倒重来"
+                        android:textColor="@color/purple"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:lineSpacingExtra="5dp"
+                        android:text="第一次：一口气设计了120课的完整课程体系。做完了才发现——这不是课程，这是负担。推倒。\n\n第二次：按「能力级别」组织。进步很大，但产品形态还是API服务。推倒。\n\n第三次：接入了智能体平台，做了AI Bot。产品形态找到了，但限制太多。推倒。\n\n第四次：做了三科合一的综合学习平台。技术栈最漂亮的一次，但大而全不是他要的东西。推倒。"
+                        android:textColor="@color/text_mid"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:lineSpacingExtra="5dp"
+                        android:text="第五次，他找到了正确的载体——LUMIS AI语音助手。这一次他只做了两件事——但做到了极致。"
+                        android:textColor="@color/coral"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 📚 LUMIS 教学 -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_md"
+                app:cardBackgroundColor="@color/surface_white"
+                app:cardCornerRadius="@dimen/corner_md"
+                app:cardElevation="1dp"
+                app:strokeColor="#F0EBF7"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_md">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="📚 LUMIS 教学"
+                        android:textColor="@color/purple"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:lineSpacingExtra="5dp"
+                        android:text="打开App，对着LUMIS说「开始上课」。Lumis会用孩子的名字打招呼，然后进入精心设计的四轮10分钟教学："
+                        android:textColor="@color/text_mid"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:lineSpacingExtra="5dp"
+                        android:text="第0轮（1分钟）问候与热身\n第1轮（3分钟）新词领读\n第2轮（2分钟）互动与纠错\n第3轮（1分钟）总结与期待"
+                        android:textColor="@color/text_mid"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:lineSpacingExtra="5dp"
+                        android:text="Lumis永远不会说「错了」。如果孩子把「dog」说成了「dag」，Lumis会说「Yes! Dog! D-O-G! Dog!」——用「回声法」把正确的发音轻轻递回去。这不是教学法，这是心理学。"
+                        android:textColor="@color/coral"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 🎯 120课课程体系 -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_md"
+                app:cardBackgroundColor="@color/surface_white"
+                app:cardCornerRadius="@dimen/corner_md"
+                app:cardElevation="1dp"
+                app:strokeColor="#F0EBF7"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_md">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🎯 120课，6大阶段"
+                        android:textColor="@color/purple"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <!-- 紧凑的阶段行 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:background="@drawable/bg_stage_row"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_sm">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="⭐ 第一阶段 1-20课"
+                            android:textColor="@color/purple"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="打招呼、数字1-10、颜色"
+                            android:textColor="@color/text_soft"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:background="@drawable/bg_stage_row"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_sm">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="⭐ 第二阶段 21-40课"
+                            android:textColor="@color/purple"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="26个字母 A-Z 的自然发音"
+                            android:textColor="@color/text_soft"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:background="@drawable/bg_stage_row"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_sm">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="⭐ 第三阶段 41-60课"
+                            android:textColor="@color/purple"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="家庭成员、身体部位、食物、动物"
+                            android:textColor="@color/text_soft"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:background="@drawable/bg_stage_row"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_sm">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="⭐ 第四阶段 61-80课"
+                            android:textColor="@color/purple"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="5大核心句型：This is / I like / What is this / I want / How many"
+                            android:textColor="@color/text_soft"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:background="@drawable/bg_stage_row"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_sm">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="⭐ 第五阶段 81-100课"
+                            android:textColor="@color/purple"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="一天的时光、天气季节、学校生活、生日派对"
+                            android:textColor="@color/text_soft"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:background="@drawable/bg_stage_row"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_sm">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="⭐ 第六阶段 101-120课"
+                            android:textColor="@color/purple"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="故事听说、角色扮演（餐厅点餐、看医生）、毕业"
+                            android:textColor="@color/text_soft"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:text="每天10分钟，一周5天，24周（约半年）走完120课。"
+                        android:textColor="@color/text_mid"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 🎤 跟屁虫模式 -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_md"
+                app:cardBackgroundColor="@color/surface_white"
+                app:cardCornerRadius="@dimen/corner_md"
+                app:cardElevation="1dp"
+                app:strokeColor="#F0EBF7"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_md">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🎤 跟屁虫模式"
+                        android:textColor="@color/mint_dark"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:lineSpacingExtra="5dp"
+                        android:text="吃饭时，孩子说「我要吃苹果」。Lumis立刻跟上：「I want apple!」孩子说「这个好好吃」。Lumis说：「This is yummy!」"
+                        android:textColor="@color/text_mid"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:lineSpacingExtra="5dp"
+                        android:text="没有解释，没有教学，没有纠正。只有翻译。像一个影子一样，孩子说什么，它就用英语复述一遍。"
+                        android:textColor="@color/mint_dark"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:lineSpacingExtra="5dp"
+                        android:text="激活方式：对着LUMIS说「跟屁虫」。切回教学模式：说「Lumis」。"
+                        android:textColor="@color/text_mid"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 💡 使用指南 -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_md"
+                app:cardBackgroundColor="@color/surface_white"
+                app:cardCornerRadius="@dimen/corner_md"
+                app:cardElevation="1dp"
+                app:strokeColor="#F0EBF7"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_md">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="💡 使用指南"
+                        android:textColor="@color/purple"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:lineSpacingExtra="5dp"
+                        android:text="开始上课：说「开始上课」或「Lumis」\n跟屁虫：说「跟屁虫」\n查看进度：说「我学到第几课了」\n跳课：说「我要学第X课」\n改名字：说「把我的名字改成XX」"
+                        android:textColor="@color/text_mid"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:lineSpacingExtra="5dp"
+                        android:text="每日节奏：固定时段10分钟教学 + 吃饭玩耍时开启跟屁虫模式。长按顶部标题栏可退出登录。"
+                        android:textColor="@color/text_soft"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 结尾渐变卡片 -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_md"
+                app:cardCornerRadius="@dimen/corner_md"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/purple">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_closing_gradient"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_md">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="💌 这不是一个产品"
+                        android:textColor="@color/gold"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:lineSpacingExtra="5dp"
+                        android:text="他不是在做创业项目，不是在追赶AI教育的风口。他是一个父亲，他看到了传统英语教育的系统性缺陷——整个体系的设计就注定了大多数孩子学完十年英语依然张不开嘴。"
+                        android:textColor="#D0C8E8"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:lineSpacingExtra="5dp"
+                        android:text="10分钟。少刷两个短视频的时间。但如果你坚持半年，你的孩子会拥有一项中国大多数成年人都不具备的能力——自然地、不恐惧地、带着享受地用英语交流。"
+                        android:textColor="@color/gold_light"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_md"
+                        android:gravity="center"
+                        android:lineSpacingExtra="5dp"
+                        android:text="Lumis — 一个父亲能给孩子最好的礼物，\n不是恐惧学习的阴影，\n而是开口说话的勇气。"
+                        android:textColor="@color/gold"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.02" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 版本号 -->
+            <TextView
+                android:id="@+id/tvVersion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/spacing_md"
+                android:textColor="@color/text_soft"
+                android:textSize="12sp" />
+
+            <!-- 火炬计划按钮 -->
+            <LinearLayout
+                android:id="@+id/btnTorchPlan"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="@dimen/spacing_lg"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:background="@drawable/btn_gold"
+                android:clickable="true"
+                android:focusable="true"
+                android:elevation="2dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🔥 火炬计划（合伙人）"
+                    android:textColor="@color/text_on_gold"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 分享按钮 -->
+            <LinearLayout
+                android:id="@+id/btnShare"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="@dimen/spacing_md"
+                android:layout_marginBottom="@dimen/spacing_xl"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:background="@drawable/bg_user_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:elevation="1dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_share"
+                    android:layout_marginEnd="8dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="分享给朋友"
+                    android:textColor="@color/purple"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

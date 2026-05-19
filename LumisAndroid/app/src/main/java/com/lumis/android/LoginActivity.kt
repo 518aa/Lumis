@@ -93,7 +93,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun startEntryAnimations() {
         val views = listOf(
-            binding.tvLogo, binding.tvSubtitle,
+            binding.ivMascot, binding.tvLogo, binding.tvSubtitle,
             binding.etEmail, binding.etPassword,
             binding.btnLogin, binding.tvSwitch
         )
@@ -115,13 +115,15 @@ class LoginActivity : AppCompatActivity() {
         if (isRegisterMode) {
             binding.btnLogin.text = "注册"
             binding.tvSwitch.text = "已有账号？点击登录"
+            binding.tvUsernameLabel.visibility = View.VISIBLE
             binding.etUsername.visibility = View.VISIBLE
-            binding.etInviteCode.visibility = View.VISIBLE
+            binding.inviteCodeContainer.visibility = View.VISIBLE
         } else {
             binding.btnLogin.text = "登录"
             binding.tvSwitch.text = "没有账号？点击注册"
+            binding.tvUsernameLabel.visibility = View.GONE
             binding.etUsername.visibility = View.GONE
-            binding.etInviteCode.visibility = View.GONE
+            binding.inviteCodeContainer.visibility = View.GONE
         }
     }
 
