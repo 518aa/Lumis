@@ -1,5 +1,6 @@
 # ── lumis-mcp ──
 lumis-mcp/__pycache__/
+lumis-mcp/mcp-tokens.conf
 lumis-mcp/data/users/
 lumis-mcp/data/_current_shibie.json
 lumis-mcp/data/_current_device.json

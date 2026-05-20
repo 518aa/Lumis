@@ -5,6 +5,7 @@ import logging
 
 import httpx
 from course_data import COURSES
+from cachetools import TTLCache
 
 logger = logging.getLogger("LumisMCP")
 
@@ -15,22 +16,24 @@ if sys.platform == "win32":
 mcp = FastMCP("Lumis-English-Course")
 
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://127.0.0.1:8900")
+INTERNAL_API_KEY = os.environ.get("LUMIS_API_KEY", "")
 
-
-def _make_client() -> httpx.Client:
-    return httpx.Client(timeout=5.0, trust_env=False)
+_headers = {"X-API-Key": INTERNAL_API_KEY} if INTERNAL_API_KEY else {}
+_http_client = httpx.Client(timeout=5.0, trust_env=False, headers=_headers)
 
 
 def _api_get(path: str) -> dict:
-    with _make_client() as client:
-        r = client.get(f"{BACKEND_URL}{path}")
-        return r.json()
+    r = _http_client.get(f"{BACKEND_URL}{path}")
+    if r.status_code >= 400:
+        return {"success": False, "error": f"HTTP {r.status_code}"}
+    return r.json()
 
 
 def _api_post(path: str, data: dict) -> dict:
-    with _make_client() as client:
-        r = client.post(f"{BACKEND_URL}{path}", json=data)
-        return r.json()
+    r = _http_client.post(f"{BACKEND_URL}{path}", json=data)
+    if r.status_code >= 400:
+        return {"success": False, "error": f"HTTP {r.status_code}"}
+    return r.json()
 
 
 def _lesson_info(n):
@@ -54,22 +57,38 @@ def _require_sid(shibie_id: str) -> str | None:
     return None
 
 
+_sid_cache = TTLCache(maxsize=1000, ttl=300)
+
+
 def _fetch_user(shibie_id: str) -> dict | None:
-    try:
-        result = _api_get(f"/api/user/{shibie_id}")
-        if result.get("success"):
-            return result["data"]
-    except Exception as e:
-        logger.error(f"获取用户失败: {e}")
+    if not shibie_id or shibie_id.strip() != shibie_id:
         return None
 
-    if shibie_id == "test-user":
-        return None
+    if "-" in shibie_id:
+        try:
+            result = _api_get(f"/api/user/{shibie_id}")
+            if result.get("success"):
+                return result["data"]
+        except Exception as e:
+            logger.warning(f"精确查询失败，将尝试 lookup: {e}")
+    else:
+        cached = _sid_cache.get(shibie_id)
+        if cached:
+            try:
+                result = _api_get(f"/api/user/{cached}")
+                if result.get("success"):
+                    return result["data"]
+            except Exception:
+                del _sid_cache[shibie_id]
 
     try:
         result = _api_get(f"/api/user/lookup/{shibie_id}")
         if result.get("success"):
-            logger.info(f"通过 lookup 找到用户: {shibie_id} → {result['data']['shibie_id']}")
+            full_id = result["data"]["shibie_id"]
+            short = full_id[:8]
+            _sid_cache[short] = full_id
+            if short != shibie_id:
+                logger.info(f"lookup: {shibie_id} → {full_id}")
             return result["data"]
     except Exception:
         pass
@@ -77,12 +96,17 @@ def _fetch_user(shibie_id: str) -> dict | None:
 
 
 def _resolve_id(shibie_id: str) -> str:
+    if "-" in shibie_id:
+        return shibie_id
+    cached = _sid_cache.get(shibie_id)
+    if cached:
+        return cached
     d = _fetch_user(shibie_id)
     return d["shibie_id"] if d else shibie_id
 
 
 # ──────────────────────────────────────────
-# 10 个核心工具
+# 11 个核心工具
 # ──────────────────────────────────────────
 
 @mcp.tool()
@@ -162,6 +186,8 @@ def next_lesson(shibie_id: str = "") -> str:
 @mcp.tool()
 def add_stars(count: int = 1, shibie_id: str = "") -> str:
     """给孩子加星星奖励，每次回答正确时调用。"""
+    if not 1 <= count <= 10:
+        return f"⚠️ 无效星星数: {count}，请选1-10。"
     if err := _require_sid(shibie_id):
         return err
     sid = _resolve_id(shibie_id)
@@ -267,14 +293,15 @@ def update_name(name: str, shibie_id: str = "") -> str:
     """修改学员的显示名字。"""
     if not name or not name.strip():
         return "⚠️ 名字不能为空"
+    clean_name = name.strip()[:20]
     if err := _require_sid(shibie_id):
         return err
     sid = _resolve_id(shibie_id)
     try:
-        result = _api_post("/api/internal/update-name", {"shibie_id": sid, "name": name.strip()})
+        result = _api_post("/api/internal/update-name", {"shibie_id": sid, "name": clean_name})
         if not result.get("success"):
             return f"⚠️ 修改名字失败: {result.get('error')}"
-        return f"✅ 名字已更新为「{name.strip()}」"
+        return f"✅ 名字已更新为「{clean_name}」"
     except Exception as e:
         return f"⚠️ 后端连接失败: {e}"
 

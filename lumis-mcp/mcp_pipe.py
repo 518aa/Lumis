@@ -84,6 +84,7 @@ async def connect_to_server(uri, target):
                 process.wait(timeout=5)
             except subprocess.TimeoutExpired:
                 process.kill()
+                process.wait()
 
 
 async def pipe_ws_to_proc(websocket, process, target):

@@ -193,7 +193,8 @@ def web_login(request: Request, email: str = Form(...), password: str = Form(...
     resp = RedirectResponse(url="/dashboard", status_code=302)
     resp.set_cookie(
         key="access_token", value=token,
-        httponly=True, max_age=86400, path="/",
+        httponly=True, secure=True, samesite="lax",
+        max_age=86400, path="/",
     )
     return resp
 
@@ -201,7 +202,7 @@ def web_login(request: Request, email: str = Form(...), password: str = Form(...
 @router.post("/api/web/logout")
 def web_logout(request: Request):
     resp = RedirectResponse(url="/dashboard/login", status_code=302)
-    resp.delete_cookie("access_token", path="/")
+    resp.delete_cookie("access_token", path="/", secure=True, samesite="lax")
     return resp
 
 

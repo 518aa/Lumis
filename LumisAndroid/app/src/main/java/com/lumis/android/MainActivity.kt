@@ -28,6 +28,7 @@ import androidx.preference.PreferenceManager
 import com.lumis.android.databinding.ActivityMainBinding
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -48,7 +49,6 @@ class MainActivity : AppCompatActivity() {
     private var lastResumeTime = 0L
     private var currentTtsText = ""
 
-    private val mainScope = MainScope()
     private var pollJob: Job? = null
 
     private var userName: String = ""
@@ -380,11 +380,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun startPolling() {
         pollJob?.cancel()
-        pollJob = mainScope.launch {
+        pollJob = lifecycleScope.launch {
             while (isActive) {
                 delay(10_000)
                 if (isSessionActive) {
-                    fetchUserProfile()
+                    try {
+                        fetchUserProfile()
+                    } catch (e: Exception) {
+                        Log.e(tag, "轮询 fetchUserProfile 异常: ${e.message}")
+                    }
                 }
             }
         }
@@ -418,7 +422,7 @@ class MainActivity : AppCompatActivity() {
         if (!checkAudioPermission()) return
 
         if (userName.isBlank()) {
-            mainScope.launch {
+            lifecycleScope.launch {
                 appendChat("系统", "正在加载用户数据...")
                 val ok = awaitProfileRefresh()
                 if (!ok) {
@@ -453,7 +457,7 @@ class MainActivity : AppCompatActivity() {
         wsManager = WebSocketManager(wsUrl, token, deviceId, clientId, shibieId)
         wsManager?.setUserInfo(userName, userStars, userLesson, shibieId)
         wsManager?.onConnectionState = { connected ->
-            mainScope.launch {
+            lifecycleScope.launch {
                 if (connected) {
                     appendChat("系统", "已连接！开始上课 🎉")
                     transitionToRecording()
@@ -465,7 +469,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         wsManager?.onJsonMessage = { msg ->
-            mainScope.launch { handleJsonMessage(msg) }
+            lifecycleScope.launch { handleJsonMessage(msg) }
         }
 
         wsManager?.onAudioData = { data ->
@@ -484,9 +488,12 @@ class MainActivity : AppCompatActivity() {
                 cont.resume(false) {}
                 return@suspendCancellableCoroutine
             }
+            var alreadyResolved = false
             val backendUrl = prefs.getString("backend_url", "https://lumis.tpr.wales")!!
             val api = LumisApi(backendUrl)
             api.getProfile(token) { result ->
+                if (alreadyResolved) return@getProfile
+                alreadyResolved = true
                 result.onSuccess { profile ->
                     val user = profile.user
                     if (user != null) {
@@ -514,7 +521,7 @@ class MainActivity : AppCompatActivity() {
         audioCodec?.startRecording { opusFrame ->
             wsManager?.sendAudio(opusFrame)
         }
-        mainScope.launch {
+        lifecycleScope.launch {
             binding.tvStatus.text = "我在听..."
         }
     }
@@ -692,7 +699,6 @@ class MainActivity : AppCompatActivity() {
         paywallPollTimer = null
         paywallDialog?.dismiss()
         paywallDialog = null
-        mainScope.cancel()
         stopPulseAnimation()
         stopRippleAnimation()
         hideConnectingDots()
@@ -1021,6 +1027,8 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val REQ_AUDIO = 1001
 
+        // 小智(xiaozhi)官方平台 WebSocket 连接凭证，非敏感用户数据。
+        // 当前单设备场景下硬编码即可；多设备部署时应迁移到 BuildConfig 或远程配置。
         private const val WS_URL = "wss://api.tenclass.net/xiaozhi/v1/"
         private const val WS_TOKEN = "test-token"
         private const val DEVICE_ID = "f0:18:98:3d:a1:35"

@@ -11,6 +11,7 @@ if [ ! -f "$TOKEN_FILE" ]; then
 fi
 
 # 先杀掉旧进程
+pkill -f "mcp_pipe.py lumis" 2>/dev/null || true
 sleep 1
 
 while IFS= read -r token; do

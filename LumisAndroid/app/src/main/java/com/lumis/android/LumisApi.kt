@@ -14,7 +14,7 @@ class LumisApi(private val baseUrl: String = "https://lumis.tpr.wales") {
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
-        .readTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
+        .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
         .build()
     private val gson = Gson()
     private val jsonType = "application/json; charset=utf-8".toMediaType()

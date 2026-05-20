@@ -49,7 +49,8 @@ def admin_login(request: Request, password: str = Form(...)):
     resp = RedirectResponse(url="/admin", status_code=302)
     resp.set_cookie(
         key="admin_token", value=token,
-        httponly=True, max_age=86400, path="/",
+        httponly=True, secure=True, samesite="lax",
+        max_age=86400, path="/",
     )
     return resp
 
@@ -57,7 +58,7 @@ def admin_login(request: Request, password: str = Form(...)):
 @router.post("/admin/logout")
 def admin_logout():
     resp = RedirectResponse(url="/admin/login", status_code=302)
-    resp.delete_cookie("admin_token", path="/")
+    resp.delete_cookie("admin_token", path="/", secure=True, samesite="lax")
     return resp
 
 

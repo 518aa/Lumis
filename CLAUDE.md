@@ -10,23 +10,24 @@ Android App ──WebSocket──▶ 小智官方后端 (api.tenclass.net)
      │                          │
      │ HTTPS                    │ MCP 协议 (WSS 中继)
      ▼                          ▼
-lumis-backend              mcp_pipe.py (WSS ↔ stdio 桥接, 指数退避重连)
-(FastAPI+SQLAlchemy)            │
-  :8900                         ▼
-     ▲                     lumis_server.py (MCP 工具服务, stdio 模式)
-     │                          │
-     │ Cloudflare Tunnel        │ HTTP API (httpx)
-     │ lumis.tpr.wales          ▼
-     └──────────────────── lumis-backend
+lumis.tpr.wales            mcp_pipe.py (WSS ↔ stdio 桥接, 指数退避重连)
+  │ CF Worker(proxy)             │
+  ▼                              ▼
+lumis-backend-spvs         lumis_server.py (MCP 工具服务, stdio 模式)
+.onrender.com                   │
+(FastAPI+SQLAlchemy)            ▼
+  Neon PostgreSQL          lumis-backend (httpx)
 ```
 
 ## 公网访问
 
-- **后端 API**: `https://lumis.tpr.wales` (Cloudflare Tunnel → localhost:8900)
+- **后端 API**: `https://lumis.tpr.wales`
+  - 本地开发: Cloudflare Tunnel → localhost:8900
+  - 云端部署: CF Worker (lumis-proxy) → Render (lumis-backend-spvs.onrender.com)
 - **Landing Page**: `https://lumis.tpr.wales/` (HTML 下载页)
-- **APK 下载**: `https://lumis.tpr.wales/download/apk` (FileResponse, `static/lumis.apk`)
-- **隧道**: 复用 `anban-xsd` 隧道，域名 `lumis.tpr.wales`
-- **重要**: 只需一个 cloudflared 进程运行 `anban-xsd` 隧道（config.yml 已含 lumis ingress），不要跑第二个 lumis 专用进程，会抢 tunnel ID 导致断连
+- **APK 下载**: `https://lumis.tpr.wales/download/apk` (GitHub Release)
+- **管理后台**: `https://lumis.tpr.wales/admin` (密码: `lumis-admin-2025`)
+- **合伙人后台**: `https://lumis.tpr.wales/dashboard` (用户邮箱+密码登录)
 
 ## 四层职责
 

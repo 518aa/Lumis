@@ -156,11 +156,18 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Lumis Backend", lifespan=lifespan)
 
+_cors_origins_str = os.environ.get(
+    "CORS_ORIGINS",
+    "https://lumis.tpr.wales,http://localhost:8900",
+)
+_cors_origins = [o.strip() for o in _cors_origins_str.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_cors_origins,
     allow_methods=["*"],
     allow_headers=["*"],
+    allow_credentials=True,
 )
 
 app.include_router(users.router, prefix="/api")

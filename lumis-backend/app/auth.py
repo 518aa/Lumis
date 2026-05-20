@@ -13,7 +13,7 @@ from sqlalchemy import text
 
 from app.database import get_db
 
-SECRET_KEY = os.environ.get("LUMIS_SECRET_KEY", "lumis-dev-DO-NOT-USE-IN-PROD-2024-xK9mP2vN8qR4wT6")
+SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "lumis-dev-secret-key")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 hours
 REFRESH_TOKEN_EXPIRE_DAYS = 30
@@ -88,7 +88,7 @@ def get_current_admin(request: Request):
     payload = decode_token(token)
     if not payload or payload.get("type") != "admin":
         resp = RedirectResponse(url="/admin/login", status_code=302)
-        resp.delete_cookie("admin_token")
+        resp.delete_cookie("admin_token", secure=True, samesite="lax")
         return resp
     return True
 
@@ -102,14 +102,14 @@ def get_current_account_from_cookie(request: Request, db=Depends(get_db)) -> dic
     payload = decode_token(token)
     if not payload or payload.get("type") != "access":
         resp = RedirectResponse(url="/dashboard/login", status_code=302)
-        resp.delete_cookie("access_token")
+        resp.delete_cookie("access_token", secure=True, samesite="lax")
         return resp
 
     account_id = int(payload["sub"])
     row = db.execute(text("SELECT * FROM accounts WHERE id = :id"), {"id": account_id}).fetchone()
     if not row:
         resp = RedirectResponse(url="/dashboard/login", status_code=302)
-        resp.delete_cookie("access_token")
+        resp.delete_cookie("access_token", secure=True, samesite="lax")
         return resp
 
     account = dict(row._mapping)
