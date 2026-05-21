@@ -59,16 +59,6 @@
                 app:tint="@color/text_soft" />
         </LinearLayout>
 
-        <!-- 用户名 -->
-        <TextView
-            android:id="@+id/tvUserName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_xs"
-            android:text=""
-            android:textColor="@color/text_mid"
-            android:textSize="14sp"
-            android:visibility="gone" />
     </LinearLayout>
 
     <!-- 模式切换 Toggle -->
@@ -108,13 +98,84 @@
             android:textStyle="bold" />
     </LinearLayout>
 
+    <!-- 当前课程卡片 -->
+    <LinearLayout
+        android:id="@+id/lessonCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/spacing_md"
+        android:layout_marginTop="@dimen/spacing_sm"
+        android:background="@drawable/bg_lesson_card"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/spacing_md"
+        android:paddingVertical="@dimen/spacing_sm"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/modeToggle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvLessonTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text=""
+                android:textColor="@color/purple"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvLessonStars"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="@color/accent_gold"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvLessonTopic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text=""
+            android:textColor="@color/text_mid"
+            android:textSize="13sp" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:max="120"
+            android:progress="1"
+            android:progressDrawable="@drawable/bg_progress_bar" />
+
+        <TextView
+            android:id="@+id/tvWeekCheckin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:text=""
+            android:textColor="@color/text_soft"
+            android:textSize="12sp" />
+    </LinearLayout>
+
     <!-- Lumis 角色 + 脉冲环 -->
     <FrameLayout
         android:id="@+id/lumisContainer"
         android:layout_width="@dimen/mic_container_size"
         android:layout_height="@dimen/mic_container_size"
-        android:layout_marginTop="@dimen/spacing_md"
-        app:layout_constraintTop_toBottomOf="@id/modeToggle"
+        android:layout_marginTop="@dimen/spacing_sm"
+        app:layout_constraintTop_toBottomOf="@id/lessonCard"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -230,70 +291,16 @@
     </LinearLayout>
 
     <!-- 聊天气泡区 -->
-    <ScrollView
-        android:id="@+id/scrollChat"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvChat"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginHorizontal="@dimen/spacing_md"
         android:layout_marginTop="@dimen/spacing_sm"
         android:layout_marginBottom="@dimen/spacing_sm"
+        android:clipToPadding="false"
         android:scrollbars="none"
-        android:fillViewport="true"
         app:layout_constraintTop_toBottomOf="@id/dotsContainer"
-        app:layout_constraintBottom_toTopOf="@id/bottomBar">
-
-        <LinearLayout
-            android:id="@+id/chatContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingVertical="@dimen/spacing_xs" />
-    </ScrollView>
-
-    <!-- 底部按钮栏 -->
-    <LinearLayout
-        android:id="@+id/bottomBar"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_bar_height"
-        android:background="@drawable/bg_bottom_bar"
-        android:elevation="8dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:paddingHorizontal="@dimen/spacing_xl"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <!-- 历史 -->
-        <TextView
-            android:id="@+id/btnHistory"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="📋"
-            android:textSize="24sp"
-            android:contentDescription="历史" />
-
-        <!-- 麦克风 (中间大按钮) -->
-        <TextView
-            android:id="@+id/btnMic"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="🎙️"
-            android:textSize="32sp"
-            android:contentDescription="麦克风" />
-
-        <!-- 星星 -->
-        <TextView
-            android:id="@+id/btnStars"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="⭐"
-            android:textSize="24sp"
-            android:contentDescription="星星" />
-    </LinearLayout>
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

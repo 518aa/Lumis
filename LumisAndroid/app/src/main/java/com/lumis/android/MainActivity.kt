@@ -16,7 +16,6 @@ import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -25,6 +24,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.edit
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.lumis.android.databinding.ActivityMainBinding
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -60,6 +60,8 @@ class MainActivity : AppCompatActivity() {
         get() = field.ifBlank { prefs.getString("access_level", "free") ?: "free" }
     private var userInviteCode: String = ""
     private var currentMode: String = "teaching"
+    private val chatAdapter = ChatAdapter()
+    private val chatMessages = mutableListOf<ChatMessage>()
 
     private var pulseAnimator: ObjectAnimator? = null
     private var rippleRunnable: Runnable? = null
@@ -78,6 +80,9 @@ class MainActivity : AppCompatActivity() {
 
         ensureDeviceIds()
         fetchUserProfile()
+
+        binding.rvChat.layoutManager = LinearLayoutManager(this)
+        binding.rvChat.adapter = chatAdapter
 
         binding.btnTalk.setOnClickListener {
             if (!isSessionActive) {
@@ -402,10 +407,7 @@ class MainActivity : AppCompatActivity() {
     private fun updateUserInfo() {
         binding.tvGreeting.text = "${getGreeting()} $userName 👋"
         binding.progressPill.text = "⭐ $userStars 星 · 第${userLesson}课"
-        if (userName.isNotBlank()) {
-            binding.tvUserName.visibility = View.VISIBLE
-            binding.tvUserName.text = userName
-        }
+        updateLessonCard()
     }
 
     private fun getGreeting(): String {
@@ -416,6 +418,46 @@ class MainActivity : AppCompatActivity() {
             in 18..22 -> "晚上好"
             else -> "你好"
         }
+    }
+
+    private fun getLessonPhase(lesson: Int): Pair<String, String> = when {
+        lesson <= 20 -> "声音启蒙" to "基础发音 · 听觉感知"
+        lesson <= 40 -> "自然拼读" to "字母组合 · 拼读规律"
+        lesson <= 60 -> "词汇爆发" to "高频词 · 主题词汇"
+        lesson <= 80 -> "句子搭建" to "日常用语 · 简单句型"
+        lesson <= 100 -> "对话互动" to "情景对话 · 表达练习"
+        else -> "流利表达" to "综合应用 · 自由表达"
+    }
+
+    private fun updateLessonCard() {
+        val (phase, topic) = getLessonPhase(userLesson)
+        binding.tvLessonTitle.text = "📚 第${userLesson}课 · $phase"
+        binding.tvLessonTopic.text = topic
+        binding.tvLessonStars.text = "⭐ $userStars"
+        binding.progressBar.progress = userLesson
+        binding.tvWeekCheckin.text = buildWeekCheckinText()
+        binding.lessonCard.visibility = View.VISIBLE
+    }
+
+    private fun buildWeekCheckinText(): String {
+        val cal = java.util.Calendar.getInstance()
+        val weekKey = java.text.SimpleDateFormat("yyyy-w", java.util.Locale.US).format(cal.time)
+        val days = listOf("周一", "周二", "周三", "周四", "周五")
+        val today = (cal.get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7
+        val checked = prefs.getStringSet("week_checkin_$weekKey", emptySet()) ?: emptySet()
+        return days.mapIndexed { i, name ->
+            val dayChecked = checked.contains("$i") || i < today
+            "$name ${if (dayChecked) "✓" else "○"}"
+        }.joinToString("  ")
+    }
+
+    private fun recordWeekCheckin() {
+        val cal = java.util.Calendar.getInstance()
+        val weekKey = java.text.SimpleDateFormat("yyyy-w", java.util.Locale.US).format(cal.time)
+        val today = "${(cal.get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7}"
+        val set = prefs.getStringSet("week_checkin_$weekKey", emptySet())?.toMutableSet() ?: mutableSetOf()
+        set.add(today)
+        prefs.edit().putStringSet("week_checkin_$weekKey", set).apply()
     }
 
     private fun startSession() {
@@ -445,10 +487,13 @@ class MainActivity : AppCompatActivity() {
 
         isSessionActive = true
         isTtsSpeaking = false
-        binding.chatContainer.removeAllViews()
+        chatMessages.clear()
+        chatAdapter.submitList(emptyList())
         appendChat("系统", "正在连接 Lumis 老师...")
         transitionToConnecting()
         updateUI()
+        recordWeekCheckin()
+        updateLessonCard()
 
         audioCodec = AudioCodec()
         audioCodec?.init()
@@ -612,45 +657,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun appendChat(speaker: String, text: String) {
-        val isLumis = speaker == "Lumis" || speaker == "系统"
-        val isMintMode = currentMode == "genie_buggy"
-
-        val bubble = TextView(this).apply {
-            this.text = text
-            textSize = 14f
-            setPadding(28, 20, 28, 20)
-            maxWidth = resources.getDimensionPixelSize(R.dimen.chat_bubble_max_width)
-
-            val bgRes = when {
-                isLumis && isMintMode -> R.drawable.bg_chat_bubble_lumis_mint
-                isLumis -> R.drawable.bg_chat_bubble_lumis
-                isMintMode -> R.drawable.bg_chat_bubble_user_mint
-                else -> R.drawable.bg_chat_bubble_user
+        chatMessages.add(ChatMessage(speaker, text, currentMode))
+        chatAdapter.submitList(chatMessages.toList())
+        binding.rvChat.post {
+            if (chatAdapter.itemCount > 0) {
+                binding.rvChat.scrollToPosition(chatAdapter.itemCount - 1)
             }
-            setBackgroundResource(bgRes)
-
-            setTextColor(
-                if (isLumis) getColor(R.color.text_main)
-                else getColor(R.color.text_on_purple)
-            )
-        }
-
-        val wrapper = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = if (isLumis) Gravity.START else Gravity.END
-            val lp = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            lp.topMargin = 8
-            lp.bottomMargin = 8
-            layoutParams = lp
-            addView(bubble)
-        }
-
-        binding.chatContainer.addView(wrapper)
-        binding.scrollChat.post {
-            binding.scrollChat.fullScroll(ScrollView.FOCUS_DOWN)
         }
     }
 
