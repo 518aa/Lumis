@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumis · AI英语老师 · 一个父亲，用代码为女儿造的英语老师</title>
+<meta name="description" content="Lumis是一款专为3-8岁儿童设计的AI英语学习助手。每天10分钟，让孩子爱上开口说英语。半年打破沉默，三年自信交流。永久免费。">
+<meta name="keywords" content="Lumis,儿童英语,AI英语老师,英语启蒙,跟屁虫模式,LUMIS教学">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #FEF8EE;
+  --cream-dark: #F5EDD8;
+  --cream-deeper: #EDE0C4;
+  --purple: #7B6BCC;
+  --purple-light: #EAE6F9;
+  --purple-mid: #A99CE8;
+  --mint: #5DCAA5;
+  --mint-light: #E1F5EE;
+  --warm-yellow: #F5C842;
+  --warm-orange: #F5854A;
+  --soft-pink: #F4A0B5;
+  --soft-pink-light: #FDF0F4;
+  --ink: #2D2A1F;
+  --ink-mid: #5A5647;
+  --ink-light: #8A8475;
+  --border: rgba(120,100,60,0.12);
+  --shadow-soft: 0 4px 24px rgba(100,80,40,0.08);
+  --radius: 20px;
+  --radius-sm: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Nunito', 'ZCOOL XiaoWei', 'Noto Serif SC', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+/* Decorative paper texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c8b89a' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+/* ===== NAV ===== */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  background: rgba(254,248,238,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+  padding: 0 2rem;
+}
+.nav-inner {
+  max-width: 1100px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Nunito', sans-serif; font-weight: 900;
+  font-size: 1.4rem; color: var(--purple); text-decoration: none;
+}
+.nav-logo .star-icon { font-size: 1.6rem; }
+.nav-links { display: flex; gap: 1.8rem; list-style: none; }
+.nav-links a {
+  font-size: 0.9rem; font-weight: 600;
+  color: var(--ink-mid); text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--purple); }
+.nav-cta {
+  background: var(--purple); color: #fff;
+  padding: 0.5rem 1.4rem; border-radius: 50px;
+  font-size: 0.9rem; font-weight: 700;
+  text-decoration: none; transition: all 0.2s;
+  box-shadow: 0 3px 12px rgba(123,107,204,0.35);
+}
+.nav-cta:hover { background: #6658b8; transform: translateY(-1px); }
+
+/* ===== SECTIONS ===== */
+section { position: relative; z-index: 1; }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+
+/* ===== FREE BANNER ===== */
+.free-banner {
+  background: linear-gradient(135deg, var(--mint) 0%, #4eb896 100%);
+  padding: 0.7rem 2rem;
+  text-align: center;
+  margin-top: 64px;
+}
+.free-banner p {
+  color: #fff; font-weight: 700; font-size: 0.95rem;
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap;
+}
+.free-banner .badge-forever {
+  background: rgba(255,255,255,0.25);
+  border: 1px solid rgba(255,255,255,0.5);
+  border-radius: 50px; padding: 0.1rem 0.8rem;
+  font-size: 0.85rem;
+}
+.free-banner small {
+  display: block; color: rgba(255,255,255,0.75);
+  font-size: 0.78rem; font-weight: 400; margin-top: 0.2rem;
+}
+
+/* ===== HERO ===== */
+.hero {
+  padding: 5rem 2rem 4rem;
+  background: var(--cream);
+  overflow: hidden;
+  position: relative;
+}
+.hero-deco {
+  position: absolute; font-size: 3rem; opacity: 0.12; pointer-events: none;
+  animation: float 6s ease-in-out infinite;
+}
+@keyframes float {
+  0%,100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(8deg); }
+}
+.hero-inner {
+  max-width: 1100px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;
+}
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--purple-light); color: var(--purple);
+  border-radius: 50px; padding: 0.3rem 1rem;
+  font-size: 0.82rem; font-weight: 700; margin-bottom: 1.5rem;
+}
+.hero h1 {
+  font-family: 'ZCOOL XiaoWei', serif;
+  font-size: clamp(2.2rem, 5vw, 3.2rem);
+  line-height: 1.2;
+  color: var(--ink);
+  margin-bottom: 1rem;
+}
+.hero h1 em {
+  font-style: normal;
+  color: var(--purple);
+  position: relative;
+  display: inline-block;
+}
+.hero h1 em::after {
+  content: '★';
+  position: absolute; top: -0.3em; right: -0.6em;
+  font-size: 0.5em; color: var(--warm-yellow);
+  animation: spin-star 3s linear infinite;
+}
+@keyframes spin-star {
+  0% { transform: rotate(0); } 100% { transform: rotate(360deg); }
+}
+.hero-sub {
+  font-size: 1.05rem; color: var(--ink-mid);
+  margin-bottom: 2rem; line-height: 1.9;
+}
+.hero-sub strong { color: var(--ink); }
+.hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+.btn-primary {
+  background: var(--purple); color: #fff;
+  padding: 0.85rem 2rem; border-radius: 50px;
+  font-size: 1rem; font-weight: 700;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;
+  box-shadow: 0 6px 20px rgba(123,107,204,0.4);
+  transition: all 0.25s;
+}
+.btn-primary:hover { background: #6658b8; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(123,107,204,0.45); }
+.btn-secondary {
+  background: transparent; color: var(--ink-mid);
+  padding: 0.85rem 2rem; border-radius: 50px;
+  border: 1.5px solid var(--cream-deeper);
+  font-size: 1rem; font-weight: 600;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;
+  transition: all 0.25s;
+}
+.btn-secondary:hover { border-color: var(--purple); color: var(--purple); }
+.hero-visual {
+  display: flex; justify-content: center; align-items: center;
+  position: relative;
+}
+.hero-device-wrap {
+  position: relative;
+  display: flex; justify-content: center; align-items: center;
+}
+.hero-bubble {
+  background: #fff; border-radius: 20px;
+  padding: 1.2rem 1.5rem;
+  box-shadow: var(--shadow-soft);
+  font-size: 0.9rem; line-height: 1.6;
+  border: 1px solid var(--border);
+  max-width: 260px;
+  position: relative;
+}
+.hero-bubble .bubble-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--mint); display: inline-block; margin-right: 6px;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(0.8)} }
+.hero-device {
+  width: 160px; height: 160px; border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #3a3060, #1a1640);
+  display: flex; align-items: center; justify-content: center;
+  margin: 1.5rem auto;
+  box-shadow: 0 0 0 12px rgba(123,107,204,0.1), 0 0 0 24px rgba(123,107,204,0.05),
+              0 8px 32px rgba(30,20,80,0.25);
+  position: relative;
+}
+.hero-device::after {
+  content: '';
+  width: 48px; height: 24px; border-radius: 50%;
+  background: rgba(150,140,200,0.18);
+  position: absolute; top: 38%; left: 50%; transform: translateX(-50%);
+}
+.device-eyes {
+  display: flex; gap: 18px; position: relative; z-index: 1;
+}
+.device-eye {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--mint);
+  box-shadow: 0 0 8px rgba(93,202,165,0.6);
+  animation: blink 4s ease-in-out infinite;
+}
+@keyframes blink { 0%,45%,55%,100%{transform:scaleY(1)} 50%{transform:scaleY(0.1)} }
+.floating-stat {
+  position: absolute;
+  background: #fff; border-radius: 14px; padding: 0.6rem 1rem;
+  box-shadow: var(--shadow-soft); border: 1px solid var(--border);
+  font-size: 0.8rem; font-weight: 700; white-space: nowrap;
+}
+.floating-stat.left { left: -10px; top: 30%; }
+.floating-stat.right { right: -10px; bottom: 25%; }
+.floating-stat .num { font-size: 1.3rem; display: block; color: var(--purple); }
+.floating-stat .label { color: var(--ink-light); font-weight: 400; }
+
+/* ===== STORY SECTION ===== */
+.story-section { background: #fff; padding: 5rem 2rem; }
+.section-eyebrow {
+  text-align: center; margin-bottom: 0.8rem;
+  font-size: 0.82rem; font-weight: 700; letter-spacing: 0.1em;
+  color: var(--ink-light); text-transform: uppercase;
+}
+.section-title {
+  font-family: 'ZCOOL XiaoWei', serif;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  text-align: center; margin-bottom: 0.8rem;
+  color: var(--ink);
+}
+.section-sub {
+  text-align: center; max-width: 640px; margin: 0 auto 3.5rem;
+  color: var(--ink-mid); font-size: 1rem; line-height: 1.8;
+}
+.story-prose {
+  max-width: 720px; margin: 0 auto 3.5rem;
+  font-size: 1.05rem; line-height: 1.95; color: var(--ink-mid);
+}
+.story-prose p { margin-bottom: 1.2rem; }
+.story-prose strong { color: var(--ink); font-weight: 700; }
+.story-prose .quote-block {
+  background: var(--purple-light);
+  border-left: 4px solid var(--purple);
+  border-radius: 0 12px 12px 0;
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  color: var(--purple);
+  font-weight: 600;
+  font-size: 1.08rem;
+}
+
+/* ===== ITERATIONS ===== */
+.iterations {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 1rem; margin: 3rem 0;
+}
+.iter-card {
+  background: var(--cream);
+  border-radius: 18px;
+  padding: 1.5rem 1rem 1rem;
+  text-align: center;
+  border: 1.5px solid var(--cream-deeper);
+  position: relative;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.iter-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-soft); }
+.iter-card.active {
+  background: var(--purple-light);
+  border-color: var(--purple-mid);
+}
+.iter-num {
+  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  background: var(--cream-deeper); color: var(--ink-mid);
+  border-radius: 50px; padding: 0.15rem 0.8rem;
+  font-size: 0.75rem; font-weight: 700; white-space: nowrap;
+}
+.iter-card.active .iter-num { background: var(--purple); color: #fff; }
+.iter-icon { font-size: 2.2rem; margin: 0.5rem 0; }
+.iter-name {
+  font-size: 0.82rem; font-weight: 700;
+  color: var(--ink); margin-bottom: 0.3rem;
+}
+.iter-verdict {
+  font-size: 0.75rem; color: var(--ink-light); line-height: 1.4;
+}
+.iter-card.active .iter-name { color: var(--purple); }
+.iter-arrow {
+  display: flex; align-items: center; justify-content: center;
+  color: var(--cream-deeper); font-size: 1.4rem;
+  padding-top: 2rem;
+}
+
+/* ===== MODES ===== */
+.modes-section { padding: 5rem 2rem; background: var(--cream); }
+.modes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 3rem; }
+.mode-card {
+  border-radius: 24px;
+  padding: 2.5rem;
+  position: relative; overflow: hidden;
+}
+.mode-card.mode-lumis {
+  background: var(--purple-light);
+  border: 1.5px solid var(--purple-mid);
+}
+.mode-card.mode-shadow {
+  background: var(--mint-light);
+  border: 1.5px solid #9fe1cb;
+}
+.mode-label {
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; margin-bottom: 0.5rem;
+}
+.mode-card.mode-lumis .mode-label { color: var(--purple); }
+.mode-card.mode-shadow .mode-label { color: var(--mint); }
+.mode-title {
+  font-family: 'ZCOOL XiaoWei', serif;
+  font-size: 1.7rem; margin-bottom: 0.5rem; color: var(--ink);
+}
+.mode-freq {
+  font-size: 0.82rem; color: var(--ink-light);
+  margin-bottom: 1.5rem;
+  background: rgba(255,255,255,0.5); display: inline-block;
+  padding: 0.2rem 0.8rem; border-radius: 50px;
+}
+.mode-steps {
+  display: flex; align-items: center; gap: 0.5rem;
+  margin-bottom: 1.5rem; flex-wrap: wrap;
+}
+.mode-step {
+  display: flex; flex-direction: column; align-items: center;
+  background: #fff; border-radius: 12px; padding: 0.6rem 0.8rem;
+  font-size: 0.78rem; text-align: center;
+  border: 1px solid var(--border);
+  min-width: 72px;
+}
+.mode-step .step-icon { font-size: 1.2rem; margin-bottom: 0.2rem; }
+.mode-step .step-name { font-weight: 700; color: var(--ink); font-size: 0.72rem; }
+.mode-step .step-time { color: var(--ink-light); font-size: 0.68rem; }
+.mode-arrow { color: var(--ink-light); font-size: 1rem; }
+.mode-desc { font-size: 0.9rem; color: var(--ink-mid); line-height: 1.8; }
+.shadow-examples { display: flex; flex-direction: column; gap: 0.7rem; margin: 1.2rem 0; }
+.shadow-row {
+  display: flex; align-items: center; gap: 0.8rem;
+  font-size: 0.88rem;
+}
+.shadow-zh {
+  background: #fff; border-radius: 8px; padding: 0.35rem 0.8rem;
+  border: 1px solid var(--border); color: var(--ink-mid);
+}
+.shadow-arrow { color: var(--mint); font-weight: 700; font-size: 1rem; }
+.shadow-en {
+  background: var(--mint); color: #fff;
+  border-radius: 8px; padding: 0.35rem 0.8rem;
+  font-weight: 700; font-size: 0.85rem;
+}
+.btn-outline {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  border: 1.5px solid currentColor; border-radius: 50px;
+  padding: 0.5rem 1.2rem; font-size: 0.85rem; font-weight: 700;
+  text-decoration: none; margin-top: 1.2rem; transition: all 0.2s;
+}
+.mode-card.mode-lumis .btn-outline { color: var(--purple); }
+.mode-card.mode-lumis .btn-outline:hover { background: var(--purple); color: #fff; }
+.mode-card.mode-shadow .btn-outline { color: var(--mint); }
+.mode-card.mode-shadow .btn-outline:hover { background: var(--mint); color: #fff; }
+
+/* ===== WHY IT WORKS ===== */
+.why-section { background: #fff; padding: 5rem 2rem; }
+.why-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 1.2rem; margin-top: 3rem;
+}
+.why-card {
+  background: var(--cream);
+  border-radius: 20px;
+  padding: 1.8rem 1.2rem;
+  text-align: center;
+  border: 1.5px solid var(--cream-deeper);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.why-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-soft); }
+.why-icon { font-size: 2.5rem; margin-bottom: 0.8rem; display: block; }
+.why-cant {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em;
+  color: var(--soft-pink); text-transform: uppercase; margin-bottom: 0.3rem;
+}
+.why-title { font-size: 0.88rem; font-weight: 700; color: var(--ink); margin-bottom: 0.5rem; }
+.why-desc { font-size: 0.78rem; color: var(--ink-light); line-height: 1.6; }
+.why-vs {
+  display: flex; justify-content: center; align-items: center;
+  gap: 0.5rem; margin: 0.5rem 0; font-size: 0.75rem;
+}
+.why-bad { color: var(--ink-light); text-decoration: line-through; }
+.why-good { color: var(--mint); font-weight: 700; }
+
+/* ===== CURRICULUM ===== */
+.curriculum-section { padding: 5rem 2rem; background: var(--cream); }
+.curriculum-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1.2rem; margin-top: 2.5rem;
+}
+.curr-card {
+  background: #fff; border-radius: 18px;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  transition: transform 0.2s;
+}
+.curr-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-soft); }
+.curr-phase {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
+  color: var(--ink-light); text-transform: uppercase; margin-bottom: 0.4rem;
+}
+.curr-lessons {
+  font-size: 0.78rem; color: var(--ink-light);
+  margin-bottom: 0.3rem;
+}
+.curr-title { font-weight: 700; font-size: 0.95rem; color: var(--ink); margin-bottom: 0.5rem; }
+.curr-topics { font-size: 0.82rem; color: var(--ink-mid); line-height: 1.6; }
+.curr-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  display: inline-block; margin-right: 6px;
+}
+.outcome-box {
+  background: var(--purple-light);
+  border: 1.5px solid var(--purple-mid);
+  border-radius: 20px; padding: 2rem 2.5rem;
+  margin-top: 2rem;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+}
+.outcome-title {
+  font-family: 'ZCOOL XiaoWei', serif;
+  font-size: 1.2rem; color: var(--purple);
+  margin-bottom: 1rem; grid-column: 1/-1;
+}
+.outcome-item {
+  display: flex; gap: 0.7rem; align-items: flex-start;
+  font-size: 0.88rem; color: var(--ink-mid); line-height: 1.6;
+}
+.outcome-check { color: var(--mint); font-size: 1rem; flex-shrink: 0; margin-top: 0.1rem; }
+
+/* ===== FORMS ===== */
+.forms-section { background: #fff; padding: 5rem 2rem; }
+.forms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 3rem; }
+.form-card {
+  border-radius: 24px; overflow: hidden;
+  border: 1.5px solid var(--border);
+}
+.form-card-header {
+  padding: 2rem 2rem 1.2rem;
+  background: var(--cream);
+  border-bottom: 1px solid var(--border);
+}
+.form-card-body { padding: 2rem; background: #fff; }
+.form-badge {
+  display: inline-block; background: var(--purple); color: #fff;
+  border-radius: 50px; padding: 0.2rem 0.8rem;
+  font-size: 0.75rem; font-weight: 700; margin-bottom: 0.8rem;
+}
+.form-badge.green { background: var(--mint); }
+.form-card-title { font-family: 'ZCOOL XiaoWei', serif; font-size: 1.4rem; color: var(--ink); margin-bottom: 0.4rem; }
+.form-card-sub { font-size: 0.85rem; color: var(--ink-light); line-height: 1.6; }
+.form-feature { display: flex; gap: 0.6rem; align-items: flex-start; margin-bottom: 0.8rem; font-size: 0.88rem; color: var(--ink-mid); }
+.form-feature-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.1rem; }
+.app-store-btn {
+  display: flex; align-items: center; gap: 0.8rem;
+  background: var(--ink); color: #fff;
+  border-radius: 14px; padding: 0.7rem 1.3rem;
+  text-decoration: none; font-weight: 600; font-size: 0.85rem;
+  transition: all 0.2s; margin-top: 1rem;
+  width: fit-content;
+}
+.app-store-btn:hover { background: #111; transform: translateY(-1px); }
+.app-store-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+.download-btns { display: flex; gap: 0.8rem; margin-top: 1rem; flex-wrap: wrap; align-items: center; }
+.device-cta-btn {
+  display: flex; align-items: center; gap: 0.8rem;
+  background: var(--purple); color: #fff;
+  border-radius: 14px; padding: 0.7rem 1.3rem;
+  text-decoration: none; font-weight: 600; font-size: 0.85rem;
+  transition: all 0.2s; margin-top: 1rem;
+  width: fit-content;
+}
+.device-cta-btn:hover { background: #6658b8; transform: translateY(-1px); }
+
+/* ===== TORCH PLAN ===== */
+.torch-section {
+  padding: 5rem 2rem;
+  background: linear-gradient(160deg, var(--purple-light) 0%, var(--cream) 60%);
+}
+.torch-card {
+  background: #fff; border-radius: 28px;
+  padding: 3rem; max-width: 820px; margin: 0 auto;
+  border: 1.5px solid var(--purple-mid);
+  box-shadow: 0 12px 48px rgba(123,107,204,0.12);
+}
+.torch-title {
+  font-family: 'ZCOOL XiaoWei', serif;
+  font-size: 1.8rem; color: var(--ink); margin-bottom: 0.5rem;
+}
+.torch-title span { color: var(--purple); }
+.torch-subtitle { color: var(--ink-mid); font-size: 0.95rem; margin-bottom: 2rem; line-height: 1.8; }
+.torch-benefits {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1rem; margin-bottom: 2rem;
+}
+.torch-benefit {
+  background: var(--purple-light); border-radius: 14px;
+  padding: 1rem; text-align: center;
+}
+.torch-benefit .icon { font-size: 1.8rem; margin-bottom: 0.4rem; }
+.torch-benefit p { font-size: 0.82rem; color: var(--ink-mid); line-height: 1.5; }
+.torch-benefit strong { display: block; color: var(--purple); font-size: 0.88rem; margin-bottom: 0.2rem; }
+
+/* ===== PROMISE ===== */
+.promise-section { background: var(--cream-dark); padding: 4rem 2rem; text-align: center; }
+.promise-inner { max-width: 640px; margin: 0 auto; }
+.big-free {
+  font-family: 'ZCOOL XiaoWei', serif;
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  color: var(--mint);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+.big-free span { color: var(--purple); }
+.promise-tagline { font-size: 1.05rem; color: var(--ink-mid); margin-bottom: 1rem; }
+.promise-small { font-size: 0.78rem; color: var(--ink-light); line-height: 1.7; }
+
+/* ===== LETTER SECTION ===== */
+.letter-section { background: #fff; padding: 5rem 2rem; }
+.letter-card {
+  max-width: 720px; margin: 0 auto;
+  background: var(--cream); border-radius: 24px;
+  padding: 3rem; border: 1px solid var(--cream-deeper);
+  position: relative;
+}
+.letter-card::before {
+  content: '❝';
+  position: absolute; top: 1rem; left: 2rem;
+  font-size: 4rem; color: var(--purple-mid); opacity: 0.3;
+  font-family: serif; line-height: 1;
+}
+.letter-body {
+  font-size: 1.02rem; color: var(--ink-mid);
+  line-height: 2; padding-top: 1rem;
+}
+.letter-body p { margin-bottom: 1rem; }
+.letter-body strong { color: var(--ink); }
+.letter-sig {
+  margin-top: 2rem; padding-top: 1.5rem;
+  border-top: 1px solid var(--cream-deeper);
+  font-style: italic; color: var(--ink-light);
+  font-size: 0.9rem; text-align: right;
+}
+
+/* ===== LEGAL / APPLE REQUIRED ===== */
+.legal-section { background: var(--cream); padding: 4rem 2rem; }
+.legal-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem; margin-top: 2rem;
+}
+.legal-card {
+  background: #fff; border-radius: 16px; padding: 1.5rem;
+  border: 1px solid var(--border);
+}
+.legal-card h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--ink); }
+.legal-card p { font-size: 0.78rem; color: var(--ink-light); line-height: 1.6; }
+.legal-card a { color: var(--purple); text-decoration: none; font-weight: 600; }
+.legal-card a:hover { text-decoration: underline; }
+
+/* ===== FOOTER ===== */
+footer {
+  background: var(--ink);
+  color: rgba(255,255,255,0.6);
+  padding: 3rem 2rem 2rem;
+}
+.footer-inner {
+  max-width: 1100px; margin: 0 auto;
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 2.5rem;
+}
+.footer-brand { }
+.footer-logo { color: #fff; font-size: 1.3rem; font-weight: 900; margin-bottom: 0.8rem; display: block; }
+.footer-tagline { font-size: 0.82rem; line-height: 1.7; }
+.footer-col h4 { color: rgba(255,255,255,0.85); font-size: 0.85rem; font-weight: 700; margin-bottom: 1rem; }
+.footer-col ul { list-style: none; }
+.footer-col ul li { margin-bottom: 0.5rem; }
+.footer-col ul a {
+  color: rgba(255,255,255,0.5); font-size: 0.82rem;
+  text-decoration: none; transition: color 0.2s;
+}
+.footer-col ul a:hover { color: rgba(255,255,255,0.85); }
+.footer-bottom {
+  max-width: 1100px; margin: 2rem auto 0;
+  padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 0.78rem; color: rgba(255,255,255,0.35); flex-wrap: wrap; gap: 0.5rem;
+}
+.footer-bottom a { color: rgba(255,255,255,0.5); text-decoration: none; }
+.footer-bottom a:hover { color: #fff; }
+.age-badge {
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px; padding: 0.1rem 0.5rem;
+  font-size: 0.72rem; color: rgba(255,255,255,0.5);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .hero-inner { grid-template-columns: 1fr; text-align: center; }
+  .hero-visual { margin-top: 2rem; }
+  .hero-btns { justify-content: center; }
+  .modes-grid, .forms-grid { grid-template-columns: 1fr; }
+  .why-grid { grid-template-columns: repeat(2, 1fr); }
+  .iterations { grid-template-columns: repeat(2, 1fr); }
+  .curriculum-grid { grid-template-columns: repeat(2, 1fr); }
+  .torch-benefits { grid-template-columns: 1fr; }
+  .footer-inner { grid-template-columns: 1fr 1fr; }
+  .legal-grid { grid-template-columns: 1fr 1fr; }
+  .outcome-box { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .why-grid { grid-template-columns: 1fr; }
+  .curriculum-grid { grid-template-columns: 1fr; }
+  .footer-inner { grid-template-columns: 1fr; }
+  .legal-grid { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .iterations { grid-template-columns: 1fr; }
+}
+
+/* Scroll animation */
+.reveal {
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <span class="star-icon">✦</span> Lumis
+    </a>
+    <ul class="nav-links">
+      <li><a href="#story">故事</a></li>
+      <li><a href="#modes">怎么教</a></li>
+      <li><a href="#curriculum">课程</a></li>
+      <li><a href="#why">为什么有效</a></li>
+      <li><a href="#download">下载</a></li>
+    </ul>
+    <a href="#download" class="nav-cta">免费开始 →</a>
+  </div>
+</nav>
+
+<!-- ===== FREE BANNER ===== -->
+<div class="free-banner">
+  <p>
+    🎉 <span class="badge-forever">永久免费承诺</span>
+    &nbsp;Lumis 核心功能对所有家庭永久免费开放，不需要报班，给孩子省钱，给家长省心。
+  </p>
+  <small>⚠️ 注：近期用户增长迅速，如服务器及AI模型运维成本显著增加，可能收取少许费用以维持服务品质，届时将提前通知。</small>
+</div>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <span class="hero-deco" style="top:8%;left:5%;animation-delay:0s">⭐</span>
+  <span class="hero-deco" style="top:15%;right:8%;animation-delay:1.5s">💛</span>
+  <span class="hero-deco" style="bottom:20%;left:3%;animation-delay:0.8s">✨</span>
+  <span class="hero-deco" style="bottom:15%;right:5%;animation-delay:2.2s">⭐</span>
+
+  <div class="hero-inner container">
+    <div>
+      <div class="hero-tag">✦ &nbsp;一个父亲的故事</div>
+      <h1>一个父亲，<br>用代码为女儿造的<br><em>英语老师</em></h1>
+      <p class="hero-sub">
+        每天 <strong>10分钟</strong>，让孩子爱上开口说英语<br>
+        半年打破沉默 · 三年自信交流<br>
+        不报班 · 不刷题 · 跟着AI老师说就行
+      </p>
+      <div class="hero-btns">
+        <a href="#download" class="btn-primary">📱 免费下载 App</a>
+        <a href="#story" class="btn-secondary">↓ 听听这个故事</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-device-wrap">
+        <div class="floating-stat left">
+          <span class="num">120</span>
+          <span class="label">精心设计的课</span>
+        </div>
+
+        <div>
+          <div class="hero-bubble">
+            <span class="bubble-dot"></span>
+            <strong>Hi 丽丽！Welcome back! 🌟</strong><br>
+            Today we're going to learn about <em>animals!</em>
+          </div>
+
+          <div class="hero-device">
+            <div class="device-eyes">
+              <div class="device-eye"></div>
+              <div class="device-eye" style="animation-delay:0.1s"></div>
+            </div>
+          </div>
+
+          <div style="text-align:center; background:#fff; border-radius:14px; padding:0.7rem 1.2rem; border:1px solid var(--border); font-size:0.82rem; display:inline-block;">
+            🐱 cat &nbsp;🐶 dog &nbsp;🐰 rabbit
+          </div>
+        </div>
+
+        <div class="floating-stat right">
+          <span class="num">6个月</span>
+          <span class="label">自信开口说英语</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STORY ===== -->
+<section id="story" class="story-section">
+  <div class="container">
+    <p class="section-eyebrow">缘起</p>
+    <h2 class="section-title">这是一个关于爱和坚持的故事</h2>
+    <p class="section-sub">不是产品文案，是一个不肯妥协的父亲真实走过的路。</p>
+
+    <div class="story-prose reveal">
+      <p>故事要从一堆散落在电脑里的文件夹说起。五个项目目录，五次推翻重来，横跨三个月。</p>
+      <p>一切的起点，是一个朴素的、任何家长都会有的念头：</p>
+      <div class="quote-block">
+        我的孩子，能不能真正学会说英语？<br>
+        不是那种"考试拿90分但张嘴就哑"的英语。<br>
+        是那种——碰到外国小朋友，能自然说"Hi! I'm Lili! Do you want to play with me?"的英语。
+      </div>
+      <p>在写下第一行代码之前，他认真读完了教育部《义务教育英语课程标准（2022年版）》，把国内四套主流教材逐一拆解，又翻完了英国Letters and Sounds六阶段体系、美国Common Core标准，以及TPR全身反应法。所有方法论都在说同一件事：</p>
+      <p><strong>语言习得的核心是大量、高频、有意义的口语交互。</strong>而一个班40个孩子和每周90分钟的总课时，物理上就不可能提供足够的口语训练量。这是一堵墙——传统路径翻不过去。那就绕过去。</p>
+    </div>
+
+    <h3 style="text-align:center; font-family:'ZCOOL XiaoWei',serif; font-size:1.5rem; margin-bottom:0.5rem; color:var(--ink)">五次推倒重来</h3>
+    <p style="text-align:center; color:var(--ink-light); font-size:0.88rem; margin-bottom:2rem">每一次失败，都是向对的方向更近一步</p>
+
+    <div class="iterations reveal">
+      <div class="iter-card">
+        <div class="iter-num">第1次</div>
+        <div class="iter-icon">💻</div>
+        <div class="iter-name">英语进阶</div>
+        <div class="iter-verdict">120课，20小时对话量，对5岁孩子是负担。推倒。</div>
+      </div>
+      <div class="iter-card">
+        <div class="iter-num">第2次</div>
+        <div class="iter-icon">📐</div>
+        <div class="iter-name">Lumis API</div>
+        <div class="iter-verdict">按能力级别组织课程，课程结构找对了，但还缺载体。推倒。</div>
+      </div>
+      <div class="iter-card">
+        <div class="iter-num">第3次</div>
+        <div class="iter-icon">🤖</div>
+        <div class="iter-name">LUNIS老师</div>
+        <div class="iter-verdict">接入语音Bot，方向对了，但平台限制太多，不够灵活。推倒。</div>
+      </div>
+      <div class="iter-card">
+        <div class="iter-num">第4次</div>
+        <div class="iter-icon">🌈</div>
+        <div class="iter-name">学习乐园</div>
+        <div class="iter-verdict">三科合一的平台，技术最漂亮，但大而全不是他要的。推倒。</div>
+      </div>
+      <div class="iter-card active">
+        <div class="iter-num">第5次 ✓</div>
+        <div class="iter-icon">⭐</div>
+        <div class="iter-name">Lumis</div>
+        <div class="iter-verdict">这一次，做了最简单的自己——只做两件事，做到极致。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MODES ===== -->
+<section id="modes" class="modes-section">
+  <div class="container">
+    <p class="section-eyebrow">两种模式</p>
+    <h2 class="section-title">两种模式，一种陪伴方式</h2>
+    <p class="section-sub">每天10分钟结构化教学，全天候生活浸润——两种模式叠加，产生质的改变。</p>
+
+    <div class="modes-grid reveal">
+      <!-- LUMIS Teaching -->
+      <div class="mode-card mode-lumis">
+        <div class="mode-label">模式一</div>
+        <div class="mode-title">LUMIS 教学</div>
+        <div class="mode-freq">每天 10 分钟 · 精准打击学习目标</div>
+
+        <div class="mode-steps">
+          <div class="mode-step">
+            <div class="step-icon">👋</div>
+            <div class="step-name">问候热身</div>
+            <div class="step-time">1分钟</div>
+          </div>
+          <div class="mode-arrow">→</div>
+          <div class="mode-step">
+            <div class="step-icon">📖</div>
+            <div class="step-name">新词领读</div>
+            <div class="step-time">3分钟</div>
+          </div>
+          <div class="mode-arrow">→</div>
+          <div class="mode-step">
+            <div class="step-icon">💬</div>
+            <div class="step-name">互动纠错</div>
+            <div class="step-time">2分钟</div>
+          </div>
+          <div class="mode-arrow">→</div>
+          <div class="mode-step">
+            <div class="step-icon">⭐</div>
+            <div class="step-name">总结鼓励</div>
+            <div class="step-time">1分钟</div>
+          </div>
+        </div>
+
+        <p class="mode-desc">Lumis用孩子的名字打招呼，用情境引入新词，用"回声法"无压力纠音——孩子把"dog"说成"dag"，Lumis会轻轻说"Yes! D-O-G! Dog!"，让孩子自己听到差别。每颗星星都是真实的积累，每次进步都被看见。</p>
+
+        <p style="margin-top:1rem; font-size:0.82rem; color:var(--ink-light); line-height:1.6;"><strong style="color:var(--purple)">120课 · 6大阶段 · 24周科学路径</strong><br>半年时间，自信开口，打破沉默</p>
+
+        <a href="#curriculum" class="btn-outline">了解课程体系 →</a>
+      </div>
+
+      <!-- Shadow Mode -->
+      <div class="mode-card mode-shadow">
+        <div class="mode-label">模式二</div>
+        <div class="mode-title">跟屁虫</div>
+        <div class="mode-freq">全天候 · 把生活变成最好的课堂</div>
+
+        <div class="shadow-examples">
+          <div class="shadow-row">
+            <div class="shadow-zh">我要吃苹果</div>
+            <div class="shadow-arrow">→</div>
+            <div class="shadow-en">I want apple!</div>
+          </div>
+          <div class="shadow-row">
+            <div class="shadow-zh">这个好好吃</div>
+            <div class="shadow-arrow">→</div>
+            <div class="shadow-en">This is yummy!</div>
+          </div>
+          <div class="shadow-row">
+            <div class="shadow-zh">妈妈我好困</div>
+            <div class="shadow-arrow">→</div>
+            <div class="shadow-en">Mommy, I'm sleepy!</div>
+          </div>
+        </div>
+
+        <p class="mode-desc" style="margin-top:0.8rem;">不教语法，不讲规则，只是影子一样把生活翻成英语，自然然，天天在学。对着设备说"跟屁虫"，模式立刻激活。孩子只是在生活，英语就像背景音乐一样，悄悄流进大脑。</p>
+
+        <p style="margin-top:1rem; font-size:0.82rem; background:rgba(255,255,255,0.5); border-radius:10px; padding:0.8rem 1rem; line-height:1.7; color:var(--ink-mid);">
+          💡 <strong>克拉申i+1理论的完美实践</strong>——孩子已知中文含义，英文翻译就是那个"+1"。不需要解释，大脑自动建立映射，这就是自然习得。
+        </p>
+
+        <a href="#download" class="btn-outline">了解跟屁虫模式 →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== WHY IT WORKS ===== -->
+<section id="why" class="why-section">
+  <div class="container">
+    <p class="section-eyebrow">为什么有效</p>
+    <h2 class="section-title">拆解传统教学的五个"不可能"</h2>
+    <p class="section-sub">不是老师的错，不是教材的错，是整个体系的设计决定了这五件事传统课堂做不到。</p>
+
+    <div class="why-grid reveal">
+      <div class="why-card">
+        <span class="why-icon">👤</span>
+        <div class="why-cant">不可能一</div>
+        <div class="why-title">一个老师对一个学生</div>
+        <div class="why-vs">
+          <span class="why-bad">课堂1:40</span>
+          <span>→</span>
+          <span class="why-good">Lumis 1:1</span>
+        </div>
+        <div class="why-desc">每节课每个孩子开口不到1分钟。Lumis每一秒都是你的。</div>
+      </div>
+      <div class="why-card">
+        <span class="why-icon">📅</span>
+        <div class="why-cant">不可能二</div>
+        <div class="why-title">高频训练</div>
+        <div class="why-vs">
+          <span class="why-bad">每周2-3节</span>
+          <span>→</span>
+          <span class="why-good">每天10分钟+跟屁虫</span>
+        </div>
+        <div class="why-desc">一周口语量相当于传统课堂一个月的训练量。</div>
+      </div>
+      <div class="why-card">
+        <span class="why-icon">👂</span>
+        <div class="why-cant">不可能三</div>
+        <div class="why-title">即时纠错</div>
+        <div class="why-vs">
+          <span class="why-bad">老师听不见</span>
+          <span>→</span>
+          <span class="why-good">AI马上听到</span>
+        </div>
+        <div class="why-desc">用"回声法"让孩子自己发现差异，不说"错了"，心理上更安全。</div>
+      </div>
+      <div class="why-card">
+        <span class="why-icon">🌟</span>
+        <div class="why-cant">不可能四</div>
+        <div class="why-title">情境真实</div>
+        <div class="why-vs">
+          <span class="why-bad">课本对话</span>
+          <span>→</span>
+          <span class="why-good">真实场景角色扮演</span>
+        </div>
+        <div class="why-desc">餐厅点餐、看医生、生日派对——真实交际需求驱动真实输出。</div>
+      </div>
+      <div class="why-card">
+        <span class="why-icon">🌊</span>
+        <div class="why-cant">不可能五</div>
+        <div class="why-title">持续浸润</div>
+        <div class="why-vs">
+          <span class="why-bad">课间全是中文</span>
+          <span>→</span>
+          <span class="why-good">英语融入生活</span>
+        </div>
+        <div class="why-desc">高频关联输入直接刻进长期记忆，像呼吸一样自然。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CURRICULUM ===== -->
+<section id="curriculum" class="curriculum-section">
+  <div class="container">
+    <p class="section-eyebrow">课程体系</p>
+    <h2 class="section-title">120课 · 6大阶段 · 24周科学路径</h2>
+    <p class="section-sub">每天10分钟，一周5天，半年走完120课——这是最小可行路径，从零到开口，不走弯路。</p>
+
+    <div class="curriculum-grid reveal">
+      <div class="curr-card">
+        <div class="curr-phase">第一阶段</div>
+        <div class="curr-lessons">第1-20课 · 4周</div>
+        <div class="curr-title">声音启蒙期</div>
+        <div class="curr-topics">打招呼 · 数字1-10 · 颜色认知<br>建立开口习惯，消除语言恐惧</div>
+      </div>
+      <div class="curr-card">
+        <div class="curr-phase">第二阶段</div>
+        <div class="curr-lessons">第21-40课 · 4周</div>
+        <div class="curr-title">自然拼读基础</div>
+        <div class="curr-topics">26个字母A-Z的自然发音<br>字母直接融入情境，不死记硬背</div>
+      </div>
+      <div class="curr-card">
+        <div class="curr-phase">第三阶段</div>
+        <div class="curr-lessons">第41-60课 · 4周</div>
+        <div class="curr-title">词汇爆发期</div>
+        <div class="curr-topics">家庭成员 · 身体部位<br>食物 · 动物 · 颜色形状综合运用</div>
+      </div>
+      <div class="curr-card">
+        <div class="curr-phase">第四阶段</div>
+        <div class="curr-lessons">第61-80课 · 4周</div>
+        <div class="curr-title">句型核心期</div>
+        <div class="curr-topics">This is / I like / What is this<br>I want / How many — 5大核心句型</div>
+      </div>
+      <div class="curr-card">
+        <div class="curr-phase">第五阶段</div>
+        <div class="curr-lessons">第81-100课 · 4周</div>
+        <div class="curr-title">真实场景应用</div>
+        <div class="curr-topics">一天的时光 · 天气季节<br>学校生活 · 生日派对情景对话</div>
+      </div>
+      <div class="curr-card">
+        <div class="curr-phase">第六阶段</div>
+        <div class="curr-lessons">第101-120课 · 4周</div>
+        <div class="curr-title">故事综合期</div>
+        <div class="curr-topics">故事听说 · 角色扮演<br>餐厅点餐 · 看医生 · 毕业</div>
+      </div>
+    </div>
+
+    <div class="outcome-box reveal">
+      <div class="outcome-title">📚 半年后，你的孩子能做什么？</div>
+      <div class="outcome-item"><span class="outcome-check">✓</span><span>听懂并回应日常英语问候和指令，遇到外国小朋友不再沉默</span></div>
+      <div class="outcome-item"><span class="outcome-check">✓</span><span>掌握200+核心词汇和5大核心句型，能用英语完整表达意思</span></div>
+      <div class="outcome-item"><span class="outcome-check">✓</span><span>能在真实场景中用英语点餐、购物、介绍自己</span></div>
+      <div class="outcome-item"><span class="outcome-check">✓</span><span>建立英语语感和自然拼读基础直觉，为以后学习打好根基</span></div>
+      <div class="outcome-item"><span class="outcome-check">✓</span><span>对英语学习形成终身正面态度——不是恐惧，而是期待</span></div>
+      <div class="outcome-item"><span class="outcome-check">✓</span><span>坚持使用3年后：2000+活跃词汇，自然流畅的英语口语表达</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== APP FORMS ===== -->
+<section id="download" class="forms-section">
+  <div class="container">
+    <p class="section-eyebrow">两种形态，同一个Lumis</p>
+    <h2 class="section-title">随时随地，总有一种方式陪着孩子</h2>
+
+    <div class="forms-grid reveal">
+      <!-- APP -->
+      <div class="form-card">
+        <div class="form-card-header">
+          <div class="form-badge">形态一：APP</div>
+          <div class="form-card-title">📱 Lumis App</div>
+          <div class="form-card-sub">随时随地，打开就能学。专属课程体系，系统化学习，每天10分钟，精准高效。适合固定学习时段使用。</div>
+        </div>
+        <div class="form-card-body">
+          <div class="form-feature">
+            <span class="form-feature-icon">📚</span>
+            <span>完整的120课结构化课程，进度可追踪</span>
+          </div>
+          <div class="form-feature">
+            <span class="form-feature-icon">⭐</span>
+            <span>星星积累系统，让孩子有成就感</span>
+          </div>
+          <div class="form-feature">
+            <span class="form-feature-icon">🎤</span>
+            <span>AI语音实时对话，即时纠正发音</span>
+          </div>
+          <div class="form-feature">
+            <span class="form-feature-icon">👨‍👩‍👧</span>
+            <span>家长端进度查看，了解孩子学习情况</span>
+          </div>
+          <div class="form-feature">
+            <span class="form-feature-icon">🔒</span>
+            <span>儿童隐私保护，符合COPPA标准</span>
+          </div>
+          <div class="download-btns">
+            <a href="/download/apk" class="app-store-btn" style="background:#3DDC84;">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.523 2.232l1.368-2.371a.5.5 0 00-.866-.5l-1.39 2.407A8.022 8.022 0 0012 .999a8.022 8.022 0 00-4.635.769L5.975-.639a.5.5 0 00-.866.5l1.368 2.371C3.861 4.097 2.5 6.933 2.5 10h19c0-3.067-1.361-5.903-3.977-7.768zM8.5 7.5a1 1 0 110-2 1 1 0 010 2zm7 0a1 1 0 110-2 1 1 0 010 2zM2.5 11v8a2 2 0 002 2h1v3.5a1.5 1.5 0 003 0V21h7v3.5a1.5 1.5 0 003 0V21h1a2 2 0 002-2v-8h-19zm-3 1.5a1.5 1.5 0 013 0v6a1.5 1.5 0 01-3 0v-6zm22 0a1.5 1.5 0 013 0v6a1.5 1.5 0 01-3 0v-6z"/></svg>
+              Android 下载
+            </a>
+            <a href="https://testflight.apple.com/join/WHgeevp2" target="_blank" class="app-store-btn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+              iOS TestFlight
+            </a>
+          </div>
+          <p style="font-size:0.75rem; color:var(--ink-light); margin-top:0.8rem;">Android 版直接下载安装 · iOS: 先在 App Store 安装 TestFlight App → 点击上方按钮加入测试 → 安装 LumisPro</p>
+        </div>
+      </div>
+
+      <!-- Device -->
+      <div class="form-card">
+        <div class="form-card-header">
+          <div class="form-badge green">形态二：小智设备</div>
+          <div class="form-card-title">🔵 Lumis 小智</div>
+          <div class="form-card-sub">放在身边，陪伴每一天。语音交互，自然然，把生活变成英语课堂。跟屁虫模式的最佳载体。</div>
+        </div>
+        <div class="form-card-body">
+          <div class="form-feature">
+            <span class="form-feature-icon">🎙️</span>
+            <span>全双工语音交互，说话即触发，无需操作</span>
+          </div>
+          <div class="form-feature">
+            <span class="form-feature-icon">🌐</span>
+            <span>跟屁虫模式，全天候生活场景浸润</span>
+          </div>
+          <div class="form-feature">
+            <span class="form-feature-icon">🔆</span>
+            <span>无屏幕设计，保护儿童视力健康</span>
+          </div>
+          <div class="form-feature">
+            <span class="form-feature-icon">💡</span>
+            <span>与App课程数据同步，进度一体化</span>
+          </div>
+          <div class="form-feature">
+            <span class="form-feature-icon">🔐</span>
+            <span>本地语音处理，儿童隐私优先</span>
+          </div>
+          <a href="#" class="device-cta-btn">
+            了解小智设备 →
+          </a>
+          <p style="font-size:0.75rem; color:var(--ink-light); margin-top:0.8rem;">详细信息及购买请访问官网</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TORCH PLAN ===== -->
+<section class="torch-section">
+  <div class="container">
+    <div class="torch-card reveal">
+      <div style="display:flex; align-items:center; gap:0.8rem; margin-bottom:1rem;">
+        <span style="font-size:2.5rem;">🔥</span>
+        <div>
+          <div class="torch-title">火炬计划 · <span>Torch Program</span></div>
+          <div style="font-size:0.8rem; color:var(--ink-light);">为早期用户、教育工作者和分享者准备的特别计划</div>
+        </div>
+      </div>
+      <p class="torch-subtitle">
+        Lumis 不是一家大公司。它是一个父亲从零开始构建的工具，靠口口相传传播。如果你相信每个孩子都值得更好的英语启蒙，愿意帮助我们把这个工具传递给更多家庭——火炬计划为你准备了专属支持。
+      </p>
+
+      <div class="torch-benefits">
+        <div class="torch-benefit">
+          <div class="icon">🎁</div>
+          <strong>早鸟特权</strong>
+          <p>早期加入的用户将在未来收费时享受终身免费或优先价格</p>
+        </div>
+        <div class="torch-benefit">
+          <div class="icon">🏫</div>
+          <strong>教育工作者版</strong>
+          <p>幼师、早教老师可申请教育版授权，在课堂中免费使用</p>
+        </div>
+        <div class="torch-benefit">
+          <div class="icon">🤝</div>
+          <strong>共建社区</strong>
+          <p>参与课程反馈、内容共创，你的声音将影响产品方向</p>
+        </div>
+      </div>
+
+      <div style="text-align:center;">
+        <a href="https://lumis.tpr.wales/dashboard/login" target="_blank" class="btn-primary" style="display:inline-flex; margin-top:0.5rem;">
+          🔥 了解火炬计划详情
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PROMISE ===== -->
+<section class="promise-section">
+  <div class="promise-inner reveal">
+    <div class="big-free">永久<span>免费</span></div>
+    <p class="promise-tagline">Lumis 核心教学功能，对所有家庭承诺永久免费。</p>
+    <p style="font-size:0.95rem; color:var(--ink-mid); margin-bottom:1.2rem; line-height:1.8;">
+      不需要报班，不需要买课。只收取服务器和AI模型的实际成本。<br>
+      我们相信，好的教育不应该被价格挡在门外。
+    </p>
+    <p class="promise-small">
+      ⚠️ 注：Lumis目前完全免费使用。随着用户数量持续增长，若服务器与AI API运维成本显著上升，可能向部分高级功能或重度用户收取少许费用，以确保所有用户都能享受稳定的服务质量。任何收费变更都将提前30天通知用户，核心教学功能承诺保持免费。
+    </p>
+  </div>
+</section>
+
+<!-- ===== LETTER ===== -->
+<section class="letter-section">
+  <div class="container">
+    <div class="letter-card reveal">
+      <div class="letter-body">
+        <p>他不是在做创业项目。他不是在追赶AI教育的风口。他是一个父亲，他的女儿正在学英语的年纪，他看到了传统英语教育的系统性缺陷——</p>
+        <p><strong>不是某一个老师的错，不是某一本教材的错，是整个体系的设计就注定了大多数孩子学完十年英语依然张不开嘴。</strong></p>
+        <p>他用了三个月，调研了国内外四套主流教材体系，读了教育部的课程标准，研究了克拉申的输入假说和艾宾浩斯的遗忘曲线，用五种不同的技术架构做了五个版本——</p>
+        <p>最终，他做出了一个<strong>每天只需要10分钟的东西</strong>。</p>
+        <p>这个工具，是他为自己女儿和她的好朋友们量身定做的。但如果你也看到了那堵墙，如果你也不希望自己的孩子再走"学十年英语张不开嘴"的老路——</p>
+        <p><strong>你可以试试。每天10分钟。从一个"Hello"开始。</strong></p>
+      </div>
+      <div class="letter-sig">— 一个父亲的承诺</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== LEGAL / APPLE REQUIRED ===== -->
+<section class="legal-section" id="legal">
+  <div class="container">
+    <h2 class="section-title" style="margin-bottom:1.5rem;">用户须知 & 合规信息</h2>
+    <div class="legal-grid reveal">
+      <div class="legal-card">
+        <h3>🔒 隐私政策</h3>
+        <p>Lumis严格保护儿童隐私，符合COPPA（儿童在线隐私保护法）及中国相关法规。不收集儿童个人敏感信息，语音数据仅用于教学功能，不对外共享。</p>
+        <a href="https://lumis.tpr.wales/privacy" target="_blank">查看完整隐私政策 →</a>
+      </div>
+      <div class="legal-card">
+        <h3>📋 服务条款</h3>
+        <p>使用Lumis即表示同意我们的服务条款。本App面向儿童，须在家长监护下使用。家长有权随时查看、修改或删除子女数据。</p>
+        <a href="https://lumis.tpr.wales/terms" target="_blank">查看服务条款 →</a>
+      </div>
+      <div class="legal-card">
+        <h3>👨‍👩‍👧 家长控制</h3>
+        <p>Lumis内置家长控制功能。家长可设置每日使用时限、查看学习报告、管理账户。建议家长与孩子共同使用，了解学习进度。</p>
+        <a href="https://lumis.tpr.wales/parents" target="_blank">家长指南 →</a>
+      </div>
+      <div class="legal-card">
+        <h3>📬 联系我们</h3>
+        <p>如有问题、建议或需要技术支持，欢迎通过官网联系我们。我们承诺在48小时内回复。对于儿童隐私问题将优先处理。</p>
+        <a href="https://lumis.tpr.wales/contact" target="_blank">联系支持团队 →</a>
+      </div>
+    </div>
+
+    <div style="background:#fff; border-radius:16px; padding:1.5rem 2rem; margin-top:1.5rem; border:1px solid var(--border); font-size:0.82rem; color:var(--ink-light); line-height:1.8;">
+      <strong style="color:var(--ink);">内购与订阅说明：</strong>Lumis当前版本核心功能完全免费，无隐藏消费。App内不含面向儿童的广告。如未来推出高级功能订阅，将在App内清晰标注，并严格按照Apple App Store订阅管理规范执行，用户可随时取消。所有支付均通过Apple安全渠道处理。适用年龄：4岁以上，建议在家长陪同下使用。
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="footer-logo">✦ Lumis</span>
+      <p class="footer-tagline">一个父亲能给孩子最好的礼物，<br>不是恐惧学习的阴影，<br>而是开口说话的勇气。</p>
+      <p style="margin-top:1rem; font-size:0.78rem; color:rgba(255,255,255,0.3);">© 2025 Lumis · AI英语老师</p>
+    </div>
+    <div class="footer-col">
+      <h4>产品</h4>
+      <ul>
+        <li><a href="#modes">LUMIS教学模式</a></li>
+        <li><a href="#modes">跟屁虫模式</a></li>
+        <li><a href="#curriculum">课程体系</a></li>
+        <li><a href="#download">下载App</a></li>
+        <li><a href="https://lumis.tpr.wales/" target="_blank">小智设备</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>了解更多</h4>
+      <ul>
+        <li><a href="#story">创作故事</a></li>
+        <li><a href="#why">教学原理</a></li>
+        <li><a href="https://lumis.tpr.wales/dashboard/login" target="_blank">火炬计划</a></li>
+        <li><a href="https://lumis.tpr.wales/parents" target="_blank">家长指南</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>合规与支持</h4>
+      <ul>
+        <li><a href="https://lumis.tpr.wales/privacy" target="_blank">隐私政策</a></li>
+        <li><a href="https://lumis.tpr.wales/terms" target="_blank">服务条款</a></li>
+        <li><a href="https://lumis.tpr.wales/contact" target="_blank">联系我们</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Lumis · 让每个孩子都能自信开口说英语</span>
+    <span style="display:flex; align-items:center; gap:0.6rem;">
+      <span class="age-badge">4+</span>
+      <a href="https://lumis.tpr.wales/privacy" target="_blank">隐私政策</a>
+      <a href="https://lumis.tpr.wales/terms" target="_blank">服务条款</a>
+    </span>
+  </div>
+</footer>
+
+<script>
+const reveals = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.08 });
+reveals.forEach(el => obs.observe(el));
+
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+});
+</script>
+</body>
+</html>
