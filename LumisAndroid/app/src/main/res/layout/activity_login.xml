@@ -1,232 +1,186 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_warm_gradient"
-    android:fillViewport="true"
-    android:scrollbars="none">
+    android:background="@drawable/bg_lumis_screen">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="@dimen/spacing_xl"
-        android:paddingTop="@dimen/spacing_xl"
-        android:paddingBottom="@dimen/spacing_lg">
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:paddingStart="@dimen/screen_side_padding"
+        android:paddingTop="@dimen/screen_top_padding"
+        android:paddingEnd="@dimen/screen_side_padding"
+        android:paddingBottom="@dimen/screen_bottom_padding">
 
-        <!-- Lumis Mascot -->
-        <ImageView
-            android:id="@+id/ivMascot"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginTop="40dp"
-            android:src="@drawable/lumis_face_happy"
-            android:contentDescription="Lumis"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <TextView
-            android:id="@+id/tvLogo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_md"
-            android:text="Lumis"
-            android:textColor="@color/purple"
-            android:textSize="38sp"
-            android:textStyle="bold"
-            android:letterSpacing="0.05"
-            app:layout_constraintTop_toBottomOf="@id/ivMascot"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <TextView
-            android:id="@+id/tvSubtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_xs"
-            android:text="儿童英语语音课堂"
-            android:textColor="@color/text_soft"
-            android:textSize="15sp"
-            app:layout_constraintTop_toBottomOf="@id/tvLogo"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <!-- 邮箱输入框 -->
-        <TextView
-            android:id="@+id/tvEmailLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="📧 邮箱"
-            android:textColor="@color/text_mid"
-            android:textSize="13sp"
-            app:layout_constraintTop_toBottomOf="@id/tvSubtitle"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <EditText
-            android:id="@+id/etEmail"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height"
-            android:layout_marginTop="@dimen/spacing_xs"
-            android:background="@drawable/bg_login_input"
-            android:hint="请输入邮箱地址"
-            android:inputType="textEmailAddress"
-            android:paddingStart="@dimen/spacing_md"
-            android:paddingEnd="@dimen/spacing_md"
-            android:textColor="@color/text_main"
-            android:textColorHint="@color/text_soft"
-            android:textSize="16sp"
-            app:layout_constraintTop_toBottomOf="@id/tvEmailLabel" />
-
-        <!-- 密码输入框 -->
-        <TextView
-            android:id="@+id/tvPasswordLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_md"
-            android:text="🔒 密码"
-            android:textColor="@color/text_mid"
-            android:textSize="13sp"
-            app:layout_constraintTop_toBottomOf="@id/etEmail"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <EditText
-            android:id="@+id/etPassword"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height"
-            android:layout_marginTop="@dimen/spacing_xs"
-            android:background="@drawable/bg_login_input"
-            android:hint="至少6位密码"
-            android:inputType="textPassword"
-            android:paddingStart="@dimen/spacing_md"
-            android:paddingEnd="@dimen/spacing_md"
-            android:textColor="@color/text_main"
-            android:textColorHint="@color/text_soft"
-            android:textSize="16sp"
-            app:layout_constraintTop_toBottomOf="@id/tvPasswordLabel" />
-
-        <!-- 昵称输入框（注册时显示） -->
-        <TextView
-            android:id="@+id/tvUsernameLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_md"
-            android:text="😊 昵称"
-            android:textColor="@color/text_mid"
-            android:textSize="13sp"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/etPassword"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <EditText
-            android:id="@+id/etUsername"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height"
-            android:layout_marginTop="@dimen/spacing_xs"
-            android:background="@drawable/bg_login_input"
-            android:hint="给自己取个名字吧"
-            android:inputType="text"
-            android:paddingStart="@dimen/spacing_md"
-            android:paddingEnd="@dimen/spacing_md"
-            android:textColor="@color/text_main"
-            android:textColorHint="@color/text_soft"
-            android:textSize="16sp"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/tvUsernameLabel" />
-
-        <!-- 邀请码（注册时显示，金章样式） -->
-        <LinearLayout
-            android:id="@+id/inviteCodeContainer"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_md"
-            android:orientation="vertical"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/etUsername">
+            android:minHeight="620dp">
 
-            <TextView
-                android:id="@+id/tvInviteLabel"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/brandBlock"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="🎫 邀请码"
-                android:textColor="@color/text_mid"
-                android:textSize="13sp" />
+                android:gravity="center"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_max="@dimen/content_max_width">
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/button_height"
-                android:layout_marginTop="@dimen/spacing_xs">
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_lumis_star_outline" />
+
+                <TextView
+                    android:id="@+id/tvLogo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:letterSpacing="0"
+                    android:text="Lumis"
+                    android:textColor="@color/text_primary"
+                    android:textSize="42sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvSubtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="儿童英语语音课堂"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/loginCard"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="34dp"
+                android:background="@drawable/bg_lumis_card"
+                android:elevation="8dp"
+                android:orientation="vertical"
+                android:padding="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/brandBlock"
+                app:layout_constraintWidth_max="@dimen/content_max_width">
+
+                <EditText
+                    android:id="@+id/etEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height"
+                    android:background="@drawable/bg_input_space"
+                    android:hint="邮箱"
+                    android:inputType="textEmailAddress"
+                    android:paddingStart="@dimen/spacing_md"
+                    android:paddingEnd="@dimen/spacing_md"
+                    android:singleLine="true"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_hint"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/etPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:background="@drawable/bg_input_space"
+                    android:hint="密码（至少6位）"
+                    android:inputType="textPassword"
+                    android:paddingStart="@dimen/spacing_md"
+                    android:paddingEnd="@dimen/spacing_md"
+                    android:singleLine="true"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_hint"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/etUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:background="@drawable/bg_input_space"
+                    android:hint="昵称（注册时填写）"
+                    android:inputType="text"
+                    android:paddingStart="@dimen/spacing_md"
+                    android:paddingEnd="@dimen/spacing_md"
+                    android:singleLine="true"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_hint"
+                    android:textSize="16sp"
+                    android:visibility="gone" />
 
                 <EditText
                     android:id="@+id/etInviteCode"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/bg_login_input"
-                    android:hint="输入4位邀请码"
+                    android:layout_height="@dimen/button_height"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:background="@drawable/bg_input_space"
+                    android:hint="邀请码（选填，立省99元）"
                     android:inputType="textCapCharacters"
                     android:maxLength="4"
                     android:paddingStart="@dimen/spacing_md"
-                    android:paddingEnd="80dp"
-                    android:textColor="@color/text_main"
-                    android:textColorHint="@color/text_soft"
+                    android:paddingEnd="@dimen/spacing_md"
+                    android:singleLine="true"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_hint"
                     android:textSize="16sp"
-                    android:letterSpacing="0.3" />
+                    android:visibility="gone" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnLogin"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height"
+                    android:layout_marginTop="@dimen/spacing_lg"
+                    android:background="@drawable/btn_primary_space"
+                    android:text="登录"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/tvSwitch"
                     android:layout_width="wrap_content"
-                    android:layout_height="28dp"
-                    android:layout_gravity="end|center_vertical"
-                    android:layout_marginEnd="@dimen/spacing_sm"
-                    android:background="@drawable/bg_invite_badge"
-                    android:gravity="center"
-                    android:paddingHorizontal="@dimen/spacing_sm"
-                    android:text="省99元"
-                    android:textColor="@color/text_on_gold"
-                    android:textSize="12sp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:text="没有账号？点击注册"
+                    android:textColor="@color/accent_orange"
+                    android:textSize="15sp"
                     android:textStyle="bold" />
-            </FrameLayout>
-        </LinearLayout>
 
-        <!-- 登录/注册按钮 -->
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnLogin"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height"
-            android:layout_marginTop="@dimen/spacing_xl"
-            android:background="@drawable/btn_purple_gradient"
-            android:text="登录"
-            android:textColor="@color/text_on_purple"
-            android:textSize="18sp"
-            android:textAllCaps="false"
-            android:elevation="4dp"
-            android:stateListAnimator="@null"
-            app:layout_constraintTop_toBottomOf="@id/inviteCodeContainer"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:indeterminateTint="@color/accent_orange"
+                    android:visibility="gone" />
+            </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvSwitch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_md"
-            android:text="没有账号？点击注册"
-            android:textColor="@color/purple"
-            android:textSize="15sp"
-            app:layout_constraintTop_toBottomOf="@id/btnLogin"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_md"
-            android:indeterminateTint="@color/purple"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/tvSwitch"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:gravity="center"
+                android:lineSpacingExtra="4dp"
+                android:text="每天 10 分钟，和 Lumi 老师开口说英语"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="@id/loginCard"
+                app:layout_constraintStart_toStartOf="@id/loginCard"
+                app:layout_constraintTop_toBottomOf="@id/loginCard" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</FrameLayout>

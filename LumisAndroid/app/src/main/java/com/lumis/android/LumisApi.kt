@@ -14,7 +14,7 @@ class LumisApi(private val baseUrl: String = "https://lumis.tpr.wales") {
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
-        .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+        .readTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
         .build()
     private val gson = Gson()
     private val jsonType = "application/json; charset=utf-8".toMediaType()
@@ -170,10 +170,6 @@ class LumisApi(private val baseUrl: String = "https://lumis.tpr.wales") {
             }
             override fun onResponse(call: Call, response: Response) {
                 try {
-                    if (response.code == 401) {
-                        callback(Result.failure(Exception("UNAUTHORIZED")))
-                        return
-                    }
                     val resp = gson.fromJson(response.body?.string(), ProfileResponse::class.java)
                     if (resp?.success == true && resp.data != null) {
                         callback(Result.success(resp.data))
@@ -299,24 +295,6 @@ class LumisApi(private val baseUrl: String = "https://lumis.tpr.wales") {
                         val code = (resp.data["code"] as? String) ?: ""
                         callback(Result.success(code))
                     } else callback(Result.failure(Exception(resp?.error ?: "生成失败")))
-                } catch (e: Exception) { callback(Result.failure(e)) }
-            }
-        })
-    }
-
-    fun switchMode(shibieId: String, mode: String, callback: (Result<Boolean>) -> Unit) {
-        val body = gson.toJson(mapOf("shibie_id" to shibieId, "mode" to mode))
-        val request = Request.Builder()
-            .url("$baseUrl/api/internal/switch-mode")
-            .post(body.toRequestBody(jsonType))
-            .build()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) { callback(Result.failure(e)) }
-            override fun onResponse(call: Call, response: Response) {
-                try {
-                    val resp = gson.fromJson(response.body?.string(), SimpleResponse::class.java)
-                    if (resp?.success == true) callback(Result.success(true))
-                    else callback(Result.failure(Exception(resp?.error ?: "切换失败")))
                 } catch (e: Exception) { callback(Result.failure(e)) }
             }
         })
