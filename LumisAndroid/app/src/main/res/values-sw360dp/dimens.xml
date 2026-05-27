@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="mic_button_size">150dp</dimen>
+    <dimen name="mic_container_size">200dp</dimen>
+    <dimen name="mic_icon_padding">43dp</dimen>
+    <dimen name="screen_side_padding">20dp</dimen>
+    <dimen name="screen_top_padding">18dp</dimen>
+    <dimen name="screen_bottom_padding">18dp</dimen>
+    <dimen name="main_vertical_gap">10dp</dimen>
+    <dimen name="header_height">46dp</dimen>
+    <dimen name="logo_icon_size">34dp</dimen>
+    <dimen name="top_coin_width">74dp</dimen>
+    <dimen name="top_avatar_size">34dp</dimen>
+    <dimen name="top_avatar_gap">12dp</dimen>
+    <dimen name="greeting_max_width">74dp</dimen>
+    <dimen name="lesson_card_height">148dp</dimen>
+    <dimen name="lesson_card_padding">14dp</dimen>
+    <dimen name="lesson_image_width">88dp</dimen>
+    <dimen name="lesson_image_height">118dp</dimen>
+    <dimen name="lesson_art_size">64dp</dimen>
+    <dimen name="lesson_content_gap">14dp</dimen>
+    <dimen name="progress_track_width">102dp</dimen>
+    <dimen name="progress_fill_width">66dp</dimen>
+    <dimen name="stat_row_height">90dp</dimen>
+    <dimen name="stat_card_gap">12dp</dimen>
+    <dimen name="stat_icon_size">44dp</dimen>
+    <dimen name="stat_card_padding_h">14dp</dimen>
+    <dimen name="stat_content_gap">10dp</dimen>
+    <dimen name="stat_label_text_size">12sp</dimen>
+    <dimen name="stat_number_text_size">26sp</dimen>
+    <dimen name="stat_unit_text_size">11sp</dimen>
+    <dimen name="practice_robot_width">86dp</dimen>
+    <dimen name="practice_robot_height">82dp</dimen>
+    <dimen name="hint_button_size">60dp</dimen>
+    <dimen name="main_chat_panel_height">158dp</dimen>
+    <dimen name="chat_live_height">104dp</dimen>
+</resources>

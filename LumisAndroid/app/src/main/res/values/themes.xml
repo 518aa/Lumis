@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.Lumis" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/purple</item>
-        <item name="colorPrimaryVariant">@color/purple_dark</item>
-        <item name="colorOnPrimary">@color/text_on_purple</item>
-        <item name="colorSecondary">@color/gold</item>
-        <item name="colorOnSecondary">@color/text_on_gold</item>
-        <item name="android:statusBarColor">@color/cream</item>
-        <item name="android:navigationBarColor">@color/cream</item>
-        <item name="android:windowBackground">@color/cream</item>
-        <item name="android:textColorPrimary">@color/text_main</item>
-        <item name="android:textColorSecondary">@color/text_mid</item>
-        <item name="android:textColorHint">@color/text_soft</item>
+        <item name="colorPrimary">@color/accent_orange</item>
+        <item name="colorPrimaryVariant">@color/accent_orange_dark</item>
+        <item name="colorOnPrimary">@color/text_primary</item>
+        <item name="colorSecondary">@color/accent_gold</item>
+        <item name="colorOnSecondary">@color/bg_space_start</item>
+        <item name="android:statusBarColor">@color/bg_space_start</item>
+        <item name="android:navigationBarColor">@color/bg_space_start</item>
         <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowBackground">@drawable/bg_space_gradient</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:textColorHint">@color/text_hint</item>
     </style>
 </resources>

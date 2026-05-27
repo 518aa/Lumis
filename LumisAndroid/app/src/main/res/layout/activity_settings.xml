@@ -1,148 +1,186 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cream"
-    android:fillViewport="true">
+    android:background="@drawable/bg_lumis_screen">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:paddingStart="@dimen/screen_side_padding"
+        android:paddingTop="@dimen/screen_top_padding"
+        android:paddingEnd="@dimen/screen_side_padding"
+        android:paddingBottom="@dimen/screen_bottom_padding">
 
-        <!-- Header -->
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_settings_header"
-            android:orientation="vertical"
-            android:paddingHorizontal="@dimen/spacing_xl"
-            android:paddingTop="@dimen/spacing_lg"
-            android:paddingBottom="@dimen/spacing_xl"
-            android:gravity="center_horizontal">
-
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@drawable/lumis_face_idle"
-                android:contentDescription="Lumis" />
-
-            <TextView
-                android:id="@+id/tvSettingsName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_sm"
-                android:text="用户"
-                android:textColor="@color/text_on_purple"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvSettingsEmail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_xs"
-                android:text=""
-                android:textColor="#B5B0CC"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/spacing_md">
-
-            <!-- 学习设置分组 -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/spacing_sm"
-                android:text="学习设置"
-                android:textColor="@color/text_soft"
-                android:textSize="13sp" />
+            android:layout_gravity="center_horizontal">
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:id="@+id/settingsCard"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:background="@drawable/bg_lumis_card"
+                android:elevation="7dp"
                 android:orientation="vertical"
-                android:background="@drawable/bg_user_card"
-                android:padding="@dimen/spacing_md"
-                android:layout_marginBottom="@dimen/spacing_lg">
+                android:padding="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_max="@dimen/content_max_width">
 
-                <!-- 关于 Lumis -->
                 <LinearLayout
-                    android:id="@+id/btnAboutLink"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:orientation="horizontal"
+                    android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:clickable="true"
-                    android:focusable="true">
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_lumis_star_outline" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
                         android:layout_weight="1"
-                        android:text="📖 关于 Lumis"
-                        android:textColor="@color/text_main"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="›"
-                        android:textColor="@color/text_soft"
-                        android:textSize="20sp" />
+                        android:fontFamily="sans-serif-medium"
+                        android:text="连接设置"
+                        android:textColor="@color/text_primary"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
-                <View
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0.5dp"
-                    android:background="#F0EBF7" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="22dp"
+                    android:hint="WebSocket 服务器 URL"
+                    app:boxBackgroundMode="outline"
+                    app:boxBackgroundColor="@color/surface_input"
+                    app:boxCornerRadiusBottomEnd="16dp"
+                    app:boxCornerRadiusBottomStart="16dp"
+                    app:boxCornerRadiusTopEnd="16dp"
+                    app:boxCornerRadiusTopStart="16dp"
+                    app:boxStrokeColor="@color/surface_card_border"
+                    app:hintTextColor="@color/text_hint">
 
-                <!-- 分享给朋友 -->
-                <LinearLayout
-                    android:id="@+id/btnShareLink"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etWsUrl"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textUri"
+                        android:singleLine="true"
+                        android:text="wss://api.tenclass.net/xiaozhi/v1/"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_hint" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:clickable="true"
-                    android:focusable="true">
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:hint="Access Token"
+                    app:boxBackgroundMode="outline"
+                    app:boxBackgroundColor="@color/surface_input"
+                    app:boxCornerRadiusBottomEnd="16dp"
+                    app:boxCornerRadiusBottomStart="16dp"
+                    app:boxCornerRadiusTopEnd="16dp"
+                    app:boxCornerRadiusTopStart="16dp"
+                    app:boxStrokeColor="@color/surface_card_border"
+                    app:hintTextColor="@color/text_hint">
 
-                    <TextView
-                        android:layout_width="0dp"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etToken"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="🔗 分享给朋友"
-                        android:textColor="@color/text_main"
-                        android:textSize="16sp" />
+                        android:inputType="textVisiblePassword"
+                        android:singleLine="true"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_hint" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:hint="Device ID (MAC 地址)"
+                    app:boxBackgroundMode="outline"
+                    app:boxBackgroundColor="@color/surface_input"
+                    app:boxCornerRadiusBottomEnd="16dp"
+                    app:boxCornerRadiusBottomStart="16dp"
+                    app:boxCornerRadiusTopEnd="16dp"
+                    app:boxCornerRadiusTopStart="16dp"
+                    app:boxStrokeColor="@color/surface_card_border"
+                    app:hintTextColor="@color/text_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etDeviceId"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="›"
-                        android:textColor="@color/text_soft"
-                        android:textSize="20sp" />
-                </LinearLayout>
+                        android:inputType="text"
+                        android:singleLine="true"
+                        android:text="f0:18:98:3d:a1:35"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_hint" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:hint="Client ID (UUID)"
+                    app:boxBackgroundMode="outline"
+                    app:boxBackgroundColor="@color/surface_input"
+                    app:boxCornerRadiusBottomEnd="16dp"
+                    app:boxCornerRadiusBottomStart="16dp"
+                    app:boxCornerRadiusTopEnd="16dp"
+                    app:boxCornerRadiusTopStart="16dp"
+                    app:boxStrokeColor="@color/surface_card_border"
+                    app:hintTextColor="@color/text_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etClientId"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:singleLine="true"
+                        android:text="54b01fa1-23b7-4f1a-84eb-b36f42095595"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_hint" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnSave"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height"
+                    android:layout_marginTop="@dimen/spacing_lg"
+                    android:background="@drawable/btn_primary_space"
+                    android:text="保存"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- 退出登录 -->
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnLogout"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/button_height"
-                android:layout_marginBottom="@dimen/spacing_lg"
-                android:background="@drawable/btn_coral"
-                android:text="退出登录"
-                android:textColor="@color/text_on_purple"
-                android:textSize="16sp"
-                android:textAllCaps="false"
-                android:elevation="1dp"
-                android:stateListAnimator="@null" />
-
-        </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:lineSpacingExtra="4dp"
+                android:text="提示：这些参数来自 py-xiaozhi 的 config.json，也可以在小智管理后台查看。"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="@id/settingsCard"
+                app:layout_constraintStart_toStartOf="@id/settingsCard"
+                app:layout_constraintTop_toBottomOf="@id/settingsCard" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</FrameLayout>
